@@ -9,8 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@babel/preset-react": "^7.23.3",
+    "@fullcalendar/common": "^5.11.5",
+    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/daygrid": "^6.1.10",
+    "@fullcalendar/interaction": "^6.1.10",
+    "@fullcalendar/react": "^6.1.10",
+    "@fullcalendar/timegrid": "^6.1.10",
     "@vercel/postgres": "^0.5.1",
     "next": "14.0.3",
+    "next-transpile-modules": "^10.0.1",
+    "node": "^21.6.0",
     "react": "^18",
     "react-dom": "^18"
   },
