@@ -1,4 +1,3 @@
-import {Damion} from "next/dist/compiled/@next/font/dist/google";
 import Image from "next/image";
 
 export default function Page() {
