@@ -1,3 +1,42 @@
+import Image from "next/image";
+import ListeNom from "@/components/listenom";
+
 export default function Page() {
-    return <p>Dashboard Page</p>;
+    return (
+        <div className={"flex flex-row h-screen text-4xl"}>
+
+            {/* Menu latéral gauche, boutons d'actions */}
+            <div className={"w-1/4 bg-emerald-500"}>
+                <div className={"h-1/6 flex items-center ml-5"}>
+                    <button className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant </button>
+                    <button className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</button>
+                </div>
+                <div className={"m-4 bg-gray-500"}> PAGE OPTIONS</div>
+            </div>
+
+            {/* Partie centrale, QR CODE*/}
+            <div className={"w-1/2"}>
+                {/* 3 boutons centraux */}
+                <div className={"h-1/6 items-center flex flex-row justify-center bg-emerald-200"}>
+                    <button className="ml-5  flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">⚙️</button>
+                    <button className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">Afficher code</button>
+                    <button className="ml-5 mr-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</button>
+                </div>
+                {/* barre de chargement */}
+                <div className={" flex flex-row justify-center"}>
+                    <div className={"mt-4 w-5/6 h-1/6 bg-gray-500 text-center"}> BARRE DE CHARGEMENT</div>
+                </div>
+                {/* QR CODE */}
+                <div className={"flex justify-center mt-4"}>
+                    <Image src={"/QRcodePlaceholder.svg"} alt={"qr code"} width={700} height={700}/>
+                </div>
+            </div>
+
+            {/* Partie droite, liste des étudiants */}
+            <div className={"w-1/4 bg-amber-300"}>
+                <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
+                <div className={"h-5/6 text-center max-h-full overflow-scroll "}><ListeNom/></div>
+            </div>
+        </div>
+    );
 }
