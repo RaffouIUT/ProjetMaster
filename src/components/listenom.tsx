@@ -1,10 +1,9 @@
-export default function Session() {
+export default function Session({listeNom}: any) {
     const liste = [];
 
-    {/* à changer pour chercher les cours du prof dans la bdd */}
-    for (let i = 0; i < 60; i++) {
+    for(const personne of listeNom){
         liste.push(
-            <p className={"text-3xl"}> NOM{i} Prénom{i}</p>
+            <p>{personne}</p>
         )
     }
 
