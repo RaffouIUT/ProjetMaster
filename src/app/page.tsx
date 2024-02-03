@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Page() {
 
     return (
-        <div>
+        <main>
             <div className="flex mt-5 mb-32 justify-center"><Image src="/logoLMU.png" alt="logo" width={800} height={500}/></div>
 
             <div className="flex justify-center mt-10 mb-12">
@@ -18,7 +18,7 @@ export default function Page() {
                 </div>
             </div>
             <div className="flex items-center justify-center mt-5"><button className="flex text-black hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 leading-tight tracking-tight">Connexion </button></div>
-        </div>
+        </main>
     );
 }
 

@@ -1,7 +1,10 @@
-import Image from "next/image";
+'use client'
 import ListeNom from "@/components/listenom";
+import {useQRCode} from "next-qrcode";
 
 export default function Page() {
+    const { SVG } = useQRCode();
+
     return (
         <div className={"flex flex-row h-screen text-4xl"}>
 
@@ -28,7 +31,19 @@ export default function Page() {
                 </div>
                 {/* QR CODE */}
                 <div className={"flex justify-center mt-4"}>
-                    <Image src={"/QRcodePlaceholder.svg"} alt={"qr code"} width={620} height={620}/>
+                    <SVG
+                        text={'http://localhost:3000/inter/session'}
+                        options={{
+                            errorCorrectionLevel: 'M',
+                            margin: 0,
+                            scale: 0,
+                            width: 620,
+                            color: {
+                                dark: '#000000',
+                                light: '#ffffff',
+                            },
+                        }}
+                    />
                 </div>
                 <div className={"flex text-xl text-center justify-center"}>Code et lien pour s’inscrire :<br/>
                     https://inscription-cours.univ-lemans.fr<br/>
