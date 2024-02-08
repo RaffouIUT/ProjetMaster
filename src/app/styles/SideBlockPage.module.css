@@ -26,10 +26,12 @@
     font-size: 120%;
     text-shadow: 1px 1px 1px #000;
     border-radius: 10px;
+
     /* Autres styles CSS pour le contenu, par exemple, padding, margin, etc. */
 }
 
 .button {
+    width: 70%;
     border: 0;
     line-height: 2.5;
     padding: 0 20px;
