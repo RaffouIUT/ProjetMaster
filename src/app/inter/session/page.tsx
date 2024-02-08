@@ -2,6 +2,7 @@
 import ListeNom from "@/components/listenom";
 import {useQRCode} from "next-qrcode";
 import {SetStateAction, useState} from "react";
+import ProgressBar from "@/components/progressbar";
 
 export default function Page() {
     const {SVG} = useQRCode();
@@ -11,11 +12,27 @@ export default function Page() {
     const [nom_recherche, setNom_recherche] = useState('');
     const listeEtu: string[] = [];
     const listeEtuMatch: string[] = [];
+    const [TempsMaxQR, setTempsMaxQR] = useState(12);
+    const [BuffTempsMaxQR, setBuffTempsMaxQR] = useState(TempsMaxQR);
+    const [TempsQR, setTempsQR] = useState(TempsMaxQR);
 
+    const handleBuffTempsMaxQR = (event: { target: { value: string; }; }) => {
+        setTempsMaxQR(parseInt(event.target.value));
+    }
+
+    setTimeout(() => {
+        if(TempsQR > 0){
+            setTempsQR(TempsQR - 1);
+        }else{
+            setTempsQR(TempsMaxQR);
+            setBuffTempsMaxQR(TempsMaxQR);
+            {/*TODO CHANGER QR CODE */}
+        }
+    }, 1000);
 
     {/*TODO à changer pour chercher les etudiants dans la bdd */}
-    for (let i = 0; i < 60; i++) {
-        listeEtu.push("Nom" + i + " Prenom" + i);
+    for (let i = 0; i < 90; i++) {
+        listeEtu.push("NOM" + i + " Prenom" + i);
     }
 
     const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
@@ -57,21 +74,31 @@ export default function Page() {
     }
 
     return (
-        <body className={"flex flex-row h-screen text-4xl"}>
+        <div className={"flex flex-row w-screen h-screen text-4xl"}>
 
             {/* Menu latéral gauche, boutons d'actions */}
-            <div className={"w-1/4 max-h-screen"}>
+            <div className={"w-1/4 h-full"}>
                 <div className={"h-1/6 flex items-center ml-5"}>
                     <button onClick={afficherRecherche} className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant </button>
                     <button className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</button>
                 </div>
                 {
                     options ? (
-                        <div className={"m-4 bg-gray-500"}> PAGE OPTIONS</div>
-                    ) :
+                            <div className={"flex flex-col m-4 bg-gray-500 text-center"}>
+
+                                <div>Paramètres</div>
+                                <div className={"mt-2 bg-gray-400"}>Temps Qr Code</div>
+                                <div className={"flex flex-cols justify-center space-x-2"}>
+                                    <input onChange={handleBuffTempsMaxQR} type="range" id="volume" name="volume" min="2" max="20" value={TempsMaxQR}/>
+                                    <p>{TempsMaxQR} sec</p>
+                                </div>
+
+                            </div>
+                        ) :
                         recherche ? (
                             <div className={"flex flex-col items-center m-4 bg-gray-300 "}>
-                                <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50} className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
+                                <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50}
+                                       className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
                                 <div className={"text-center overflow-hidden max-h-96 space-y-0.5"}><ListeNom listeNom={listeEtuMatch}/></div>
                             </div>
                         ) : (
@@ -81,7 +108,7 @@ export default function Page() {
             </div>
 
             {/* Partie centrale, QR CODE*/}
-            <div className={"w-1/2"}>
+            <div className={"w-1/2 h-full"}>
                 {/* 3 boutons centraux */}
                 <div className={"h-1/6 items-center flex flex-row justify-center"}>
                     <button onClick={afficherOptions} className="ml-5  flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">⚙️</button>
@@ -90,7 +117,7 @@ export default function Page() {
                 </div>
                 {/* barre de chargement */}
                 <div className={" flex flex-row justify-center"}>
-                    <div className={"mt-4 w-5/6 h-1/6 bg-gray-500 text-center"}> BARRE DE CHARGEMENT</div>
+                    <div className={"mt-4 w-5/6 h-1/6 bg-gray-500 text-center rounded-md"}> <ProgressBar progress={(TempsQR/BuffTempsMaxQR)*100}/> </div>
                 </div>
                 {/* QR CODE */}
                 <div className={"flex justify-center mt-4"}>
@@ -121,10 +148,10 @@ export default function Page() {
             </div>
 
             {/* Partie droite, liste des étudiants */}
-            <div className={"w-1/4 bg-gray-400"}>
+            <div className={"w-1/4 bg-gray-400 h-full"}>
                 <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
                 <div className={"h-5/6 text-center max-h-full overflow-scroll "}><ListeNom listeNom={listeEtu}/></div>
             </div>
-        </body>
+        </div>
     );
 }
