@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+    experimental: {
+        serverActions: true,
+    },
+}
 
 const withTM = require("next-transpile-modules")([
     "@fullcalendar/common",
