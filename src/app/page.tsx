@@ -39,7 +39,7 @@ export default async function Page() {
             <div className="flex items-center justify-center mt-5"><button className="flex text-black hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 leading-tight tracking-tight">Connexion </button></div>
         </div>*/
         <main className="flex min-h-screen flex-col p-24">
-            <Button onClick={ async => {generatePosts()}}>Generate posts</Button>
+            <Button onClick={generatePosts}>Generate posts</Button>
             {posts.map((post) => (
                 <div key={post.id}>{post.content}</div>
             ))}

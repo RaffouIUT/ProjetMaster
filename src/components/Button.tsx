@@ -2,10 +2,20 @@
 
 import React, { ComponentPropsWithoutRef } from "react";
 
-type Props = {}
+type Props = ComponentPropsWithoutRef<'button'> & {
+    onClick?: () => Promise<void> | void | undefined;
+}
 
-const Button: React.FC<ComponentPropsWithoutRef<'button'>> = (props) => {
-    return <button {...props} />
+const Button: React.FC<Props> = ({onClick, ...props}) => {
+    return (
+        <button
+            {...props}
+            onClick={async ()=> {
+                if (onClick) await onClick();
+            }
+            }
+        />
+    );
 };
 
 export default Button;
