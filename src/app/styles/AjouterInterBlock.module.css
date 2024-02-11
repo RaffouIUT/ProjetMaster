@@ -1,0 +1,59 @@
+.MiddleSideBlock {
+    position: relative ;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    width: 50%;
+    background-color: #f0f0f0;
+
+    /* Autres styles CSS pour le bloc, par exemple, padding, margin, etc. */
+}
+
+.element {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color:rgba(150, 150, 150, 1);
+    color: #fff;
+    padding: 10%;
+    font-size: 120%;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+}
+
+.bar {
+    color: #000000;
+}
+
+.button {
+    border: 0;
+    line-height: 2.5;
+    font-size: 100%;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 10px;
+    background-color: rgba(150, 150, 150, 1);
+    margin-bottom: 40px;
+    margin-top: 40px;
+
+    background-image: linear-gradient(
+            to top left,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2) 30%,
+            rgba(0, 0, 0, 0)
+    );
+    box-shadow:
+            inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+            inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+}
+
+.button:hover {
+    background-color: rgba(100, 100, 100, 1);
+}
+
+.button:active {
+    box-shadow:
+            inset -2px -2px 3px rgba(255, 255, 255, 0.6),
+            inset 2px 2px 3px rgba(0, 0, 0, 0.6);
+}
