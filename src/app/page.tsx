@@ -1,4 +1,3 @@
-import {Damion} from "next/dist/compiled/@next/font/dist/google";
 import Image from "next/image";
 import db from "@/modules/db";
 import { revalidatePath } from "next/cache";
@@ -23,6 +22,7 @@ export default async function Page() {
     return (
         /*
         <div>
+        <main>
             <div className="flex mt-5 mb-32 justify-center"><Image src="/logoLMU.png" alt="logo" width={800} height={500}/></div>
 
             <div className="flex justify-center mt-10 mb-12">
@@ -37,6 +37,7 @@ export default async function Page() {
                 </div>
             </div>
             <div className="flex items-center justify-center mt-5"><button className="flex text-black hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 leading-tight tracking-tight">Connexion </button></div>
+
         </div>*/
         <main className="flex min-h-screen flex-col p-24">
             <Button onClick={generatePosts}>Generate posts</Button>

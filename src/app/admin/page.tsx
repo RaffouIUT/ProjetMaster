@@ -1,3 +1,11 @@
+import SideBlockPage from "@/app/components/SideBlockPage";
+import AjouterInterBlock from "@/app/components/AjouterInterBlock";
+
+
 export default function Page() {
-    return <p>Dashboard Page</p>;
-}
+    return (
+        <div>
+            <SideBlockPage/>
+        </div>
+    );
+};
