@@ -23,6 +23,12 @@ body {
   min-height: 100%;
 }
 
+/* permet d'enlever le souligné et le texte en bleu des liens */
+a {
+  color: inherit!important;
+  text-decoration: inherit!important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
