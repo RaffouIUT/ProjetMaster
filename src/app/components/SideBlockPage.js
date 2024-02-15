@@ -9,7 +9,7 @@ import SupprInterBlock from "@/app/components/SupprInterBlock";
 
 const liste_inter = [
     { path: '/', label: 'Home' },
-    { path: '/connexion/admin', label: 'Admin' },
+    { path: '/admin', label: 'Admin' },
 ];
 
 
