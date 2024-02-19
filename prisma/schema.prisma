@@ -21,3 +21,58 @@ model Post {
   @@index([createdAt])
   @@map("posts")
 }
+
+model Intervenant {
+  id        String      @id @default(cuid())
+  nom       String
+  prenom    String
+  mail      String
+  login     String
+  password  String
+  cours     Cours[]
+
+  @@map("intervenants")
+}
+
+model Administrateur {
+  id        String      @id @default(cuid())
+  mail      String
+  login     String
+  password  String
+
+  @@map("administrateurs")
+}
+
+model Etudiant {
+  id           String       @id @default(cuid())
+  nom          String
+  prenom       String
+  promotion    String
+  inscriptions Inscription[]
+
+  @@map("etudiants")
+}
+
+model Cours {
+  id             String       @id @default(cuid())
+  nom            String
+  dateDebut      DateTime
+  dateFin        DateTime
+  intervenantId  String
+  intervenant    Intervenant  @relation(fields: [intervenantId], references: [id])
+  promotionVisee String
+  updatedAt      DateTime     @updatedAt
+  inscriptions   Inscription[]
+
+  @@map("cours")
+}
+
+model Inscription {
+  coursId     String
+  etudiantId  String
+  cours       Cours     @relation(fields: [coursId], references: [id])
+  etudiant    Etudiant  @relation(fields: [etudiantId], references: [id])
+
+  @@id([coursId, etudiantId])
+  @@map("inscriptions")
+}
