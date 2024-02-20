@@ -1,11 +1,12 @@
-export default function Session({listeNom}: any) {
-    const liste = [];
+import db from '@/modules/db';
 
-    for(const personne of listeNom){
-        liste.push(
-            <p>{personne}</p>
-        )
-    }
+export default async function Session() {
+    const liste: string[] = [];
+    const etu = await db.etudiant.findMany()
+
+    etu.map((etudiant) => (
+      liste.push(etudiant.nom + ' ' + etudiant.prenom)
+    ))
 
     return (liste);
 }

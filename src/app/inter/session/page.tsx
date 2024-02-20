@@ -1,21 +1,23 @@
-'use client'
+'use client';
 import ListeNom from "@/components/listenom";
 import {useQRCode} from "next-qrcode";
 import {SetStateAction, useState} from "react";
 import ProgressBar from "@/components/progressbar";
+import Button from '@/components/Button';
+import {handleCreerBdd} from '@/components/AjouterBdd';
+
 
 export default function Page() {
+    let listeEtu: string[] = []; /*TODO REMPLIR LA LISTE*/
     const {SVG} = useQRCode();
     const [options, setOption] = useState<boolean>(false)
     const [recherche, setRecherche] = useState<boolean>(false)
     const [code, setCode] = useState<boolean>(false)
     const [nom_recherche, setNom_recherche] = useState('');
-    const listeEtu: string[] = [];
     const listeEtuMatch: string[] = [];
     const [TempsMaxQR, setTempsMaxQR] = useState(12);
     const [BuffTempsMaxQR, setBuffTempsMaxQR] = useState(TempsMaxQR);
     const [TempsQR, setTempsQR] = useState(TempsMaxQR);
-
     const handleBuffTempsMaxQR = (event: { target: { value: string; }; }) => {
         setTempsMaxQR(parseInt(event.target.value));
     }
@@ -30,16 +32,15 @@ export default function Page() {
         }
     }, 1000);
 
+    const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
+        setNom_recherche(event.target.value);
+    };
+
     {/*TODO à changer pour chercher les etudiants dans la bdd */}
     for (let i = 0; i < 90; i++) {
         listeEtu.push("NOM" + i + " Prenom" + i);
     }
 
-    const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
-        setNom_recherche(event.target.value);
-    };
-
-    {/*TODO actu liste etu avec ceux qui match la recherche */}
     listeEtu.map((etu) => {
         if (etu.match(nom_recherche)) {
             listeEtuMatch.push(etu);
@@ -80,7 +81,7 @@ export default function Page() {
             <div className={"w-1/4 h-full"}>
                 <div className={"h-1/6 flex items-center ml-5"}>
                     <button onClick={afficherRecherche} className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant </button>
-                    <button className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</button>
+                    <Button onClick={handleCreerBdd} className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</Button>
                 </div>
                 {
                     options ? (
@@ -99,7 +100,12 @@ export default function Page() {
                             <div className={"flex flex-col items-center m-4 bg-gray-300 "}>
                                 <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50}
                                        className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
-                                <div className={"text-center overflow-hidden max-h-96 space-y-0.5"}><ListeNom listeNom={listeEtuMatch}/></div>
+                                <div className={'text-center overflow-scroll max-h-96'}>
+                                    {/*Todo rechercher dans bdd*/}
+                                    {listeEtuMatch.map((etu) => (
+                                      <p>{etu}</p>
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <div className={"m-4"}></div>
@@ -150,7 +156,10 @@ export default function Page() {
             {/* Partie droite, liste des étudiants */}
             <div className={"w-1/4 bg-gray-400 h-full"}>
                 <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
-                <div className={"h-5/6 text-center max-h-full overflow-scroll "}><ListeNom listeNom={listeEtu}/></div>
+                <div className={"h-5/6 text-center max-h-full overflow-scroll "}>{listeEtu.map((etu) => (
+                  <p>{etu}</p>
+                ))}
+                </div>
             </div>
         </div>
     );
