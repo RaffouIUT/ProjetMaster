@@ -1,20 +1,19 @@
 'use client';
-import ListeNom from "@/components/listenom";
 import {useQRCode} from "next-qrcode";
-import {SetStateAction, useState} from "react";
+import { SetStateAction, useEffect, useState } from 'react';
 import ProgressBar from "@/components/progressbar";
 import Button from '@/components/Button';
 import {handleCreerBdd} from '@/components/AjouterBdd';
-
+import {listeEtuPresents} from '@/components/listeEtuPresents';
 
 export default function Page() {
-    let listeEtu: string[] = []; /*TODO REMPLIR LA LISTE*/
+    const [listeEtu, setListeEtu] = useState<String[]>([]);
     const {SVG} = useQRCode();
     const [options, setOption] = useState<boolean>(false)
     const [recherche, setRecherche] = useState<boolean>(false)
     const [code, setCode] = useState<boolean>(false)
     const [nom_recherche, setNom_recherche] = useState('');
-    const listeEtuMatch: string[] = [];
+    const listeEtuMatch: String[] = [];
     const [TempsMaxQR, setTempsMaxQR] = useState(12);
     const [BuffTempsMaxQR, setBuffTempsMaxQR] = useState(TempsMaxQR);
     const [TempsQR, setTempsQR] = useState(TempsMaxQR);
@@ -22,13 +21,19 @@ export default function Page() {
         setTempsMaxQR(parseInt(event.target.value));
     }
 
+    useEffect(() => {
+        listeEtuPresents().then((liste) => {
+            setListeEtu(liste);
+        });
+    });
+
     setTimeout(() => {
         if(TempsQR > 0){
             setTempsQR(TempsQR - 1);
         }else{
             setTempsQR(TempsMaxQR);
             setBuffTempsMaxQR(TempsMaxQR);
-            {/*TODO CHANGER QR CODE */}
+            {/*TODO CHANGER QR CODE*/}
         }
     }, 1000);
 
@@ -36,11 +41,7 @@ export default function Page() {
         setNom_recherche(event.target.value);
     };
 
-    {/*TODO à changer pour chercher les etudiants dans la bdd */}
-    for (let i = 0; i < 90; i++) {
-        listeEtu.push("NOM" + i + " Prenom" + i);
-    }
-
+    // on actualise la liste des étudiants qui matchent avec la recherche de l'intervenant
     listeEtu.map((etu) => {
         if (etu.match(nom_recherche)) {
             listeEtuMatch.push(etu);
@@ -101,7 +102,7 @@ export default function Page() {
                                 <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50}
                                        className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
                                 <div className={'text-center overflow-scroll max-h-96'}>
-                                    {/*Todo rechercher dans bdd*/}
+                                    {/*TODO Système d'ajout de l'etu dans la session en cours sur bdd*/}
                                     {listeEtuMatch.map((etu) => (
                                       <p>{etu}</p>
                                     ))}
@@ -156,10 +157,9 @@ export default function Page() {
             {/* Partie droite, liste des étudiants */}
             <div className={"w-1/4 bg-gray-400 h-full"}>
                 <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
-                <div className={"h-5/6 text-center max-h-full overflow-scroll "}>{listeEtu.map((etu) => (
+                <div className={"h-5/6 text-center max-h-full overflow-scroll "}> {  listeEtu.map((etu) => (
                   <p>{etu}</p>
-                ))}
-                </div>
+                ))}</div>
             </div>
         </div>
     );
