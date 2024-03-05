@@ -23,7 +23,7 @@ export default async function Session() {
   }
 
   function fabriquerDateString(date: Date) {
-    let jour = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
+    let jour = date.getDay() > 9 ? date.getDay() : '0' + date.getDay();
     let mois = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
     let annee = date.getFullYear();
     return jour + '/' + mois + '/' + annee;
@@ -40,6 +40,7 @@ export default async function Session() {
     let date = fabriquerDateString(cour.dateDebut);
     let heure_deb = fabriquerHeureString(cour.dateDebut);
     let heure_fin = fabriquerHeureString(cour.dateFin);
+
     liste.push(
       <div
         className={'flex bg-gray-300 rounded-lg mx-4 my-4 justify-center justify-self-center text-center w-5/6 h-5/6 text-2xl'}>
