@@ -6,7 +6,9 @@ import Button from '@/components/Button';
 import {handleCreerBdd} from '@/components/AjouterBdd';
 import {listeEtuPresents} from '@/components/listeEtuPresents';
 
-export default function Page() {
+export default function Page({ params }: {
+    params: {id: string}
+}) {
     const [listeEtu, setListeEtu] = useState<String[]>([]);
     const {SVG} = useQRCode();
     const [options, setOption] = useState<boolean>(false)
@@ -22,7 +24,7 @@ export default function Page() {
     }
 
     useEffect(() => {
-        listeEtuPresents().then((liste) => {
+        listeEtuPresents(params.id).then((liste) => {
             setListeEtu(liste);
         });
     });

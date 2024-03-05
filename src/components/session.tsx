@@ -1,5 +1,6 @@
 import db from '@/modules/db';
 import { JSX } from 'react';
+import Link from 'next/link';
 
 export default async function Session() {
   let liste: JSX.Element[] = [];
@@ -22,9 +23,10 @@ export default async function Session() {
     });
   }
 
+  /*TODO fixer les dates il y a rien qui va*/
   function fabriquerDateString(date: Date) {
     let jour = date.getDay() > 9 ? date.getDay() : '0' + date.getDay();
-    let mois = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
+    let mois = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth()
     let annee = date.getFullYear();
     return jour + '/' + mois + '/' + annee;
   }
@@ -46,13 +48,13 @@ export default async function Session() {
         className={'flex bg-gray-300 rounded-lg mx-4 my-4 justify-center justify-self-center text-center w-5/6 h-5/6 text-2xl'}>
         {
           intervenant ? (
-            <button className={'w-full h-full hover:bg-primary-700  rounded-lg'}>
-              {cour.nom} <br /> {intervenant.nom + ' ' + intervenant.prenom} <br /> {date} <br /> {heure_deb + ' - ' + heure_fin}
-            </button>
+            <Link className={'w-full h-full hover:bg-primary-700 rounded-lg'} href={"/inter/session/" + cour.id}>
+              <p>{cour.nom} <br /> {intervenant.nom + ' ' + intervenant.prenom} <br /> {date} <br /> {heure_deb + ' - ' + heure_fin}</p>
+            </Link>
           ) : (
-            <button className={'w-full h-full hover:bg-primary-700  rounded-lg'}>
-              {cour.nom} <br /> {date} <br /> {heure_deb + ' - ' + heure_fin}
-            </button>
+            <Link className={'w-full h-full hover:bg-primary-700 rounded-lg'} href={"/inter/session/" + cour.id}>
+              <p>{cour.nom} <br /> {date} <br /> {heure_deb + ' - ' + heure_fin}</p>
+            </Link>
 
           )
 
