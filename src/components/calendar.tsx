@@ -1,227 +1,375 @@
-'use client'
+'use client';
 
-import FullCalendar from "@fullcalendar/react";
-import {CalendarApi, DateSelectArg, EventApi, EventClickArg, EventContentArg} from '@fullcalendar/core';
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
-import dayGridPlugin from "@fullcalendar/daygrid"
-import {createEventId, INITIAL_EVENTS} from "@/components/event-utils";
-import React, {useState} from 'react'
-import {Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Row} from "reactstrap";
-import {Props} from "next/script";
+import React, { useEffect, useState } from 'react';
+import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHeader, Row } from 'reactstrap';
 
+import FullCalendar from '@fullcalendar/react';
+import { DateSelectArg, EventClickArg, EventContentArg, EventInput } from '@fullcalendar/core';
+import { EventImpl } from '@fullcalendar/core/internal';
+import interactionPlugin from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
-interface CalendarState {
-    weekendsVisible: boolean
-    currentEvents: EventApi[]
-}
+import { FormCours, FormCoursVide, InterReduit } from '@/components/calendarEventUtils';
+import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/coursUtils';
+import { getAllInter } from '@/components/interUtils';
+import styles from '@/components/custom.module.css'
 
-export default class CalendarCustom extends React.Component<Props, CalendarState> {
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-    calendarRef : {
-        current: FullCalendar | null,
-    };
+export default function CalendarCustom()  {
 
-    state: CalendarState = {
-        weekendsVisible: true,
-        currentEvents: []
+    const [calendarRef, setCalendar] = useState<FullCalendar>();
+
+    const [modal, setModal] = useState(false);
+
+    const [formData, setFormData] = useState<FormCours>(structuredClone(FormCoursVide));
+
+    const [cours, setCours] = useState<EventInput[]>([]);
+
+    const [inters, setInters] = useState<InterReduit[]>([]);
+
+    const [actualize, setActualize] = useState(true);
+
+    const notifySuccess = (message: string) => toast.success(message);
+
+    const notifyFailure = (message: string) => toast.error(message)
+
+    const toggle = () => setModal(!modal);
+
+    useEffect(() => {
+        /**
+         * Permet de pas faire des requêtes comme un porc, pour pas que ça lag
+         * La dépendance "actualize" permet d'executer useEffect uniquement quand la valeur de actualize est modifiée
+         * Le if permet de faire la requête que quand on demande une actualisation (2 fois moins de requêtes)
+         */
+        if (actualize) {
+            // TODO : régler problème date
+            getSeances().then((liste) => {
+                setCours(liste);
+                setActualize(false)
+            });
+        }
+
+    }, [actualize]);
+
+    useEffect(() => {
+        /**
+         * La dépendance liste vide [] permet de n'exécuter le code QU'UNE SEULE FOIS
+         * de ce que j'ai compris, en mode developpement c'est exec 2 fois avec []
+         */
+        getAllInter().then((liste) => {
+            setInters(liste);
+        });
+    }, []);
+
+    const handleDateSelect = (dateSelected: DateSelectArg | null) => {
+        /**
+         * Ouvre le popup pour ajouter un cours
+         * Si on sélectionne une date, le formulaire est pré-rempli
+         * Sinon, le formulaire est vide
+         */
+        let defaultForm = structuredClone(FormCoursVide);
+
+        if (dateSelected != null) {
+            const currentView = calendarRef?.getApi().view;
+
+            switch (currentView?.type) {
+                case "dayGridMonth":
+                    defaultForm.date = dateSelected.startStr
+                    break;
+
+                case "timeGridWeek":
+                case "timeGridDay":
+                    defaultForm.date = dateSelected.startStr.split("T")[0]
+                    defaultForm.heureDeb = dateSelected.startStr.split("T")[1].slice(0, 5)
+                    defaultForm.heureFin = dateSelected.endStr.split("T")[1].slice(0, 5)
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        setFormData(defaultForm);
+        toggle()
     }
 
-    constructor(props: Props) {
-        super(props);
+    const handleEventClick = (clickInfo: EventClickArg)=> {
+        /**
+         * Fonction qui s'exécute lorsqu'on clique sur un événement du calendrier
+         * On remplit le formulaire et on ouvre la modale
+         */
+        const event: EventImpl = clickInfo.event;
 
-        this.calendarRef = React.createRef()
+        let formCours: FormCours = {
+            id: event.id,
+            nom: event.title,
+            date: event.startStr.split("T")[0],
+            salle: event.extendedProps.salle,
+            heureDeb: event.startStr.split("T")[1].slice(0, 5),
+            heureFin: event.endStr.split("T")[1].slice(0, 5),
+            intervenant: event.extendedProps.intervenant,
+            intervenantId: event.extendedProps.intervenantId,
+            promo: event.extendedProps.promo
+        }
+
+        setFormData(formCours);
+        toggle();
     }
 
-    render () {
-        return (
-            <>
-                {this.menuLateral()}
-                <div className={"basis-5/7 p-3 min-h-full"}>
-                    <FullCalendar
-                        ref={this.calendarRef}
-                        initialView="dayGridMonth"
-                        plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                        }}
-                        locale="fr"
-                        editable={true}
-                        selectable={true}
-                        select={this.handleDateSelect}
-                        weekends={this.state.weekendsVisible}
-                        events={INITIAL_EVENTS}
-                        eventContent={this.renderEventContent} // modification du rendu des events dans le calendrier
-                        eventClick={this.handleEventClick}
-                        eventsSet={this.handleEvents}
-                        fixedWeekCount={false}
-                        height="100%"/>
-                </div>
-            </>
-        );
-    }
+    const renderEventContent = (eventContent: EventContentArg) => {
+        // Change l'affichage des cours en fonction de la vue (mois, semaine, jour)
+        const currentView = calendarRef?.getApi().view;
 
-    handleDateSelect = (selectInfo: DateSelectArg) => {
-        /* fonction click sur une case */
-        let title = prompt('Please enter a new title for your event')
-        let calendarApi = selectInfo.view.calendar
-
-        calendarApi.unselect() // clear date selection
-
-        if (title) {
-            console.log(selectInfo)
-            calendarApi.addEvent({
-                id: createEventId(),
-                title: title,
-                start: selectInfo.startStr,
-                end: selectInfo.endStr,
-                // allDay: selectInfo.allDay
-                allDay: false,
-                description: "intervenant"
-            })
+        switch (currentView?.type) {
+            case "dayGridMonth":
+                return (
+                    <>
+                        <p className={"m-0"}>
+                            <b>{eventContent.timeText}</b>
+                            <i>&nbsp; {eventContent.event.title}</i>
+                        </p>
+                        <p className={"m-0"}>
+                            <i>Salle : {eventContent.event.extendedProps.salle}</i>
+                        </p>
+                        <p className={'m-0'}>
+                            <i>Intervenant : {eventContent.event.extendedProps.intervenant}</i>
+                        </p>
+                    </>
+                )
+            case "timeGridWeek":
+            case "timeGridDay":
+            default:
+                return (
+                    <>
+                        <p className={'m-0'}>
+                            <b>{eventContent.timeText}</b>
+                            <i>&nbsp; {eventContent.event.title}</i>
+                            <i> - Salle : {eventContent.event.extendedProps.salle}</i>
+                            <i> - Intervenant : {eventContent.event.extendedProps.intervenant}</i>
+                        </p>
+                    </>
+                )
         }
     }
 
-    handleEventClick = (clickInfo: EventClickArg) => {
-        if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-            clickInfo.event.remove()
+    const checkField = (data: string, typeField: string = "text") : boolean => {
+
+        switch (typeField) {
+            case "date":
+                return !!(data && data.trim().length > 0 &&
+                    data.trim().match(/^\d{4}-\d{2}-\d{2}$/));
+
+            case "time":
+                return !!(data && data.trim().length > 0 &&
+                    data.trim().match(/^\d{2}:\d{2}$/));
+
+            case "text":
+            default:
+                return !!(data && data.trim().length > 0);
+
         }
     }
 
-    handleEvents = (events: EventApi[]) => {
-        this.setState({
-            currentEvents: events
-        })
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        const nom = e.target.nom_cours.value
+        const datec = e.target.date_cours.value
+        const salle = e.target.salle_cours.value
+        const heure_deb = e.target.heure_deb_cours.value
+        const heure_fin = e.target.heure_fin_cours.value
+        const interId = e.target.inter_cours[e.target.inter_cours.selectedIndex].id
+        const promo = e.target.promo_cours.value
+
+        if (calendarRef != null && checkField(nom) && checkField(salle) && checkField(promo) && checkField(interId)
+            && checkField(datec, "date") && checkField(heure_deb, "time") && checkField(heure_fin, "time")) {
+
+            let newCours: FormCours = {
+                id: '',
+                nom: nom,
+                date: datec,
+                salle: salle,
+                intervenant: '',
+                intervenantId: interId,
+                promo: promo,
+                heureDeb: heure_deb,
+                heureFin: heure_fin
+            };
+
+            // Ajout ou mise à jour de la séance dans la base de données
+            if (formData.id == '') {
+                // Si le formulaire était vide quand on a chargé la modale, alors le cours vient d'être crée
+                addSeance(newCours).then( () => {
+                    setActualize(true)
+                    notifySuccess("Le cours a bien été ajouté !")
+                    toggle();
+                }).catch((e: any) => {
+                    notifyFailure("Erreur lors de l'insertion BD.");
+                    console.log(e);
+                })
+            } else {
+                // Sinon, on modifie un cours déjà enregistré
+                newCours.id = formData.id;
+                updateSeance(newCours).then(() => {
+                    setActualize(true)
+                    notifySuccess("Le cours a bien été modifié !")
+                    toggle();
+                }).catch((e: any) => {
+                    notifyFailure("Erreur lors de l'insertion BD.");
+                    console.log(e);
+                })
+            }
+
+
+        } else {
+            notifyFailure("Erreur de saisie dans le formulaire.")
+        }
     }
 
-    menuLateral = () => {
+    const handleRemoveOrCancel = () => {
+        if (formData.id != '') {
+            if (confirm("Etes-vous sûr de supprimer cette séance ?")) {
+                deleteSeance(formData.id).then(() => {
+                    setActualize(true)
+                    notifySuccess("Le cours a bien été supprimé !")
+                    toggle();
+                }).catch((e: any) => {
+                    notifyFailure("Erreur lors de la suppresion en BD.");
+                    console.log(e);
+                })
+            }
+        } else {
+            toggle()
+        }
+    }
+
+    return (
+        <>
+            {menuLateral()}
+            <div className={"basis-3/4 p-3 min-h-full"}>
+                <FullCalendar
+                  // @ts-ignore
+                    ref={setCalendar}
+                    initialView="dayGridMonth"
+                    plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
+                    headerToolbar={{
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    }}
+                    buttonText={{
+                        today: "Aujourd'hui",
+                        month: "mois",
+                        week: "semaine",
+                        day: "jour"
+                    }}
+                    locale="fr"
+                    editable={true}
+                    selectable={true}
+                    select={handleDateSelect}
+                    weekends={false}
+                    events={cours}
+                    eventContent={renderEventContent} // modification du rendu des events dans le calendrier
+                    eventClick={handleEventClick}
+                    eventDisplay={'block'}
+                    fixedWeekCount={false}
+                    height="100%"/>
+            </div>
+        </>
+    );
+
+    function menuLateral() {
         return (
-            <div className={"basis-2/7 p-3 bg-sky-500/100 flex flex-col items-center"}>
-                <button className={"w-96 bg-amber-500 my-2"}>Gérer données présence</button>
-                <button className={"w-96 bg-amber-500 my-2"}>Paramètres</button>
-                <this.Form_cours />
+            <div className={"basis-1/4 p-3 flex flex-col items-center"}>
+                <Button color="primary" className={"form-control my-2"} onClick={() => handleDateSelect(null)}>
+                    Ajouter un cours
+                </Button>
+                <Button color="secondary" className={"form-control my-2"}>Gérer données présence</Button>
+                <Button color="secondary" className={"form-control my-2"}>Paramètres</Button>
+                <Form_cours />
             </div>
         )
     }
 
-    renderEventContent(eventContent: EventContentArg) {
+    function Form_cours() {
         return (
-            <>
-                <b>{eventContent.timeText}</b>
-                <i>&nbsp; {eventContent.event.title}</i><br/>
-                <i>{eventContent.event.extendedProps.description}</i>
-            </>
-        )
-    }
-
-    handleSubmit = (e: any) => {
-        e.preventDefault()
-        let nom = e.target.nom_cours.value
-        let datec = e.target.date_cours.value
-        let salle = e.target.salle_cours.value
-        let heure_deb = e.target.heure_deb_cours.value
-        let heure_fin = e.target.heure_fin_cours.value
-        let inter = e.target.inter_cours.value
-
-        if (this.calendarRef.current != null) {
-            let calApi: CalendarApi = this.calendarRef.current.getApi();
-
-            calApi.addEvent({
-                id: createEventId(),
-                title: nom,
-                start: datec + "T" + heure_deb + ":00",
-                end: datec + "T" + heure_fin + ":00",
-                allDay: false,
-                description: "Salle :" + salle + "inter: " + inter
-            })
-        }
-
-        // ajout bd
-    }
-
-    Form_cours = (data: any) => {
-
-        const [modal, setModal] = useState(false);
-        console.log(data)
-        const toggle = () => setModal(!modal);
-
-        return (
-            <>
-                <Button color="primary" className={"form-control my-2"} onClick={toggle}>
-                    Ajouter un cours
-                </Button>
-                <Modal isOpen={modal} toggle={toggle}>
-                    <ModalHeader toggle={toggle}>Ajouter un cours</ModalHeader>
-                    <ModalBody>
-                        <Form className={"form"} onSubmit={event => this.handleSubmit(event)}>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"nomc"}>Nom du cours</Label>
-                                        <Input id={"nomc"} name={"nom_cours"} type={"text"} value={data ? data.nom : ""}/>
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"datec"}>Date du cours</Label>
-                                        <Input id={"datec"} name={"date_cours"} type={"date"}/>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"sallec"}>Nom de la salle</Label>
-                                        <Input id={"sallec"} name={"salle_cours"} type={"text"}/>
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"heuredebc"}>Heure de début de cours</Label>
-                                        <Input id={"heuredebc"} name={"heure_deb_cours"} type={"time"}/>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"interc"}>Nom de l'intervenant</Label>
-                                        <Input id={"interc"} name={"inter_cours"} type={"select"}>
-                                            <option>nom1</option>
-                                            <option>nom2</option>
-                                            <option>nom3</option>
-                                            <option>nom4</option>
-                                            <option>nom5</option>
-                                        </Input>
-                                    </FormGroup>
-                                </Col>
-                                <Col md={6}>
-                                    <FormGroup>
-                                        <Label for={"heurefinc"}>Heure de fin de cours</Label>
-                                        <Input id={"heurefinc"} name={"heure_fin_cours"} type={"time"}/>
-                                    </FormGroup>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md={6}>
-                                    <Button color="primary" className={"form-control"} type={"submit"}>
-                                        Ajouter
-                                    </Button>{' '}
-                                </Col>
-                                <Col md={6}>
-                                    <Button color="secondary" className={"form-control"} onClick={toggle}>
-                                        Annuler
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Form>
-                    </ModalBody>
-                    {/*<ModalFooter>*/}
-                    {/*    */}
-                    {/*</ModalFooter>*/}
-                </Modal></>
+          <>
+              <Modal isOpen={modal} toggle={toggle}>
+                  <ModalHeader toggle={toggle}>Ajouter un cours</ModalHeader>
+                  <ModalBody>
+                      <Form className={"form"} onSubmit={event => handleSubmit(event)}>
+                          <Row>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"nomc"} className={styles.required}>Nom du cours</Label>
+                                      <Input id={"nomc"} name={"nom_cours"} type={"text"} defaultValue={formData.nom} required/>
+                                  </FormGroup>
+                              </Col>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"datec"} className={styles.required}>Date du cours</Label>
+                                      <Input id={"datec"} name={"date_cours"} type={"date"} defaultValue={formData.date} required/>
+                                  </FormGroup>
+                              </Col>
+                          </Row>
+                          <Row>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"sallec"} className={styles.required}>Nom de la salle</Label>
+                                      <Input id={"sallec"} name={"salle_cours"} type={"text"} defaultValue={formData.salle} required/>
+                                  </FormGroup>
+                              </Col>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"heuredebc"} className={styles.required}>Heure de début de cours</Label>
+                                      <Input id={"heuredebc"} name={"heure_deb_cours"} type={"time"} defaultValue={formData.heureDeb} required/>
+                                  </FormGroup>
+                              </Col>
+                          </Row>
+                          <Row>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"promoc"} className={styles.required}>Promotion</Label>
+                                      <Input id={"promoc"} name={"promo_cours"} type={"text"} defaultValue={formData.promo} required/>
+                                  </FormGroup>
+                              </Col>
+                              <Col md={6}>
+                                  <FormGroup>
+                                      <Label for={"heurefinc"} className={styles.required}>Heure de fin de cours</Label>
+                                      <Input id={"heurefinc"} name={"heure_fin_cours"} type={"time"} defaultValue={formData.heureFin} required/>
+                                  </FormGroup>
+                              </Col>
+                          </Row>
+                          <Row>
+                              <Col md={12}>
+                                  <FormGroup>
+                                      <Label for={"interc"} className={styles.required}>Nom de l'intervenant</Label>
+                                      <Input id={"interc"} name={"inter_cours"} type={"select"} defaultValue={formData.intervenantId} required>
+                                          {inters.map((inter) => (
+                                              <option id={inter.id}>{inter.prenom} {inter.nom}</option>
+                                          ))}
+                                      </Input>
+                                  </FormGroup>
+                              </Col>
+                          </Row>
+                          <Row>
+                              <Col md={6}>
+                                  <Button color="primary" className={"form-control"} type={"submit"}>
+                                      {formData.id == '' ? "Ajouter" : "Modifier"}
+                                  </Button>{' '}
+                              </Col>
+                              <Col md={6}>
+                                  <Button color={formData.id == '' ? "secondary" : "danger"} className={"form-control"} onClick={handleRemoveOrCancel}>
+                                      {formData.id == '' ? "Annuler" : "Supprimer"}
+                                  </Button>
+                              </Col>
+                          </Row>
+                      </Form>
+                  </ModalBody>
+              </Modal>
+          </>
         );
     }
 };
