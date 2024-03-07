@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 
-
 const AffIntervenants = ({ liste }) => {
     return (
         <nav>

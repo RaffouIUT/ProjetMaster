@@ -1,5 +1,5 @@
-import SideBlockPage from "@/app/components/SideBlockPage";
-import AjouterInterBlock from "@/app/components/AjouterInterBlock";
+import SideBlockPage from "@/components/SideBlockPage";
+import AjouterInterBlock from "@/components/AjouterInterBlock";
 
 
 export default function Page() {

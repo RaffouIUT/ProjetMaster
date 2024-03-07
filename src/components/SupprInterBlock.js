@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react';
-import styles from '../styles/AjouterInterBlock.module.css';
+import styles from '../app/styles/AjouterInterBlock.module.css';
 
 
 

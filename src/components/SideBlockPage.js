@@ -1,10 +1,12 @@
 'use client'
 
 import React, {useState} from 'react';
-import styles from '../styles/SideBlockPage.module.css';
-import AffIntervenants from "@/app/components/AffIntervenants";
-import AjouterInterBlock from "@/app/components/AjouterInterBlock";
-import SupprInterBlock from "@/app/components/SupprInterBlock";
+import styles from '../app/styles/SideBlockPage.module.css';
+import AffIntervenants from "src/components/AffIntervenants";
+import AjouterInterBlock from "src/components/AjouterInterBlock";
+import SupprInterBlock from "src/components/SupprInterBlock";
+import Button from "src/components/Button";
+import {generateInterListe} from "src/components/bddIntervenant";
 
 
 const liste_inter = [
@@ -12,6 +14,8 @@ const liste_inter = [
     { path: '/admin', label: 'Admin' },
 ];
 
+
+const liste_inter_bdd = []
 
 const SideBlockPage = () => {
     const [isAjouterIntervenant, setIsAjouterIntervenant] = useState(false);
@@ -52,7 +56,7 @@ const SideBlockPage = () => {
                         <button className={styles.button} type="button">Gérer les données de présence</button>
                     </p>
                     <p>
-                        <button className={styles.button} type="button">Paramètres</button>
+                        <Button className={styles.button} onClick={generateInterListe}>Gérer les séances</Button>
                     </p>
                 </div>
             </div>
