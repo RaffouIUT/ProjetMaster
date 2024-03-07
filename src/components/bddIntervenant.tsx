@@ -13,6 +13,7 @@ export const generateInterListe = async () => {
     revalidatePath('/');
 };
 
+
 export const AjoutInterBDD = async (nom: string, prenom: string, mail:string) => {
     await db.intervenant.createMany({
         data: [
@@ -21,3 +22,9 @@ export const AjoutInterBDD = async (nom: string, prenom: string, mail:string) =>
     });
     revalidatePath('/');
 };
+
+export const getListeNoms = async (): Promise<string[]> => {
+    const intervenants = await db.intervenant.findMany();
+    return intervenants.map((intervenant) => intervenant.login);
+};
+

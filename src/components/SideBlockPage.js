@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react';
 import styles from '../app/styles/SideBlockPage.module.css';
-import AffIntervenants from "src/components/AffIntervenants";
+import ListeNomsPage from "@/components/AffIntervenants";
 import AjouterInterBlock from "src/components/AjouterInterBlock";
 import SupprInterBlock from "src/components/SupprInterBlock";
 import Button from "src/components/Button";
@@ -63,7 +63,7 @@ const SideBlockPage = () => {
             <div className={styles.RightSideBlock}>
                 <div className={styles.content}>
                     <h1>Liste des intervenants</h1>
-                    <AffIntervenants liste= {liste_inter}/>
+                    <ListeNomsPage/>
                 </div>
             </div>
             <div>
