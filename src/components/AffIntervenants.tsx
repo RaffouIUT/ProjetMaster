@@ -1,26 +1,8 @@
 'use client'
 
 import Link from 'next/link';
-import db from "../modules/db";
-import {revalidatePath} from "next/cache";
 import React, {useEffect, useState} from "react";
 import {getListeNoms} from "./bddIntervenant";
-
-
-
-/*export const AffIntervenants = ({ liste }) => {
-    return (
-        <nav>
-            <ul>
-                {liste.map((page) => (
-                    <li key={page.path}>
-                        <Link href={page.path}>{page.label}</Link>
-                    </li>
-                ))}
-            </ul>
-        </nav>
-    );
-};*/
 
 
 
@@ -43,7 +25,7 @@ const ListeNomsPage = () => {
                 {listeNoms.map((nom, index) => {
                     const [nomPart, prenomPart] = nom.split('.'); // Supposant que le login est sous la forme "nom.prenom"
                     const nomComplet = `${nomPart} ${prenomPart}`;
-                    return <li key={index}>{nomComplet}</li>;
+                    return <li key={index}><Link href={"http://localhost:3000/"}>{nomComplet}</Link></li>;
                 })}
             </ul>
         </nav>
