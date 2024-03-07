@@ -4,16 +4,15 @@
 generator client {
   provider = "prisma-client-js"
 }
- 
+
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model Post {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -23,28 +22,28 @@ model Post {
 }
 
 model Intervenant {
-  id        String      @id @default(cuid())
-  nom       String
-  prenom    String
-  mail      String
-  login     String
-  password  String
-  cours     Cours[]
+  id       String  @id @default(cuid())
+  nom      String
+  prenom   String
+  mail     String
+  login    String
+  password String
+  cours    Cours[]
 
   @@map("intervenants")
 }
 
 model Administrateur {
-  id        String      @id @default(cuid())
-  mail      String
-  login     String
-  password  String
+  id       String @id @default(cuid())
+  mail     String
+  login    String
+  password String
 
   @@map("administrateurs")
 }
 
 model Etudiant {
-  id           String       @id @default(cuid())
+  id           String        @id @default(cuid())
   nom          String
   prenom       String
   promotion    String
@@ -54,24 +53,25 @@ model Etudiant {
 }
 
 model Cours {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   nom            String
   dateDebut      DateTime
   dateFin        DateTime
   intervenantId  String
-  intervenant    Intervenant  @relation(fields: [intervenantId], references: [id])
+  intervenant    Intervenant   @relation(fields: [intervenantId], references: [id])
   promotionVisee String
-  updatedAt      DateTime     @updatedAt
+  updatedAt      DateTime      @updatedAt
   inscriptions   Inscription[]
+  salle          String
 
   @@map("cours")
 }
 
 model Inscription {
-  coursId     String
-  etudiantId  String
-  cours       Cours     @relation(fields: [coursId], references: [id])
-  etudiant    Etudiant  @relation(fields: [etudiantId], references: [id])
+  coursId    String
+  etudiantId String
+  cours      Cours    @relation(fields: [coursId], references: [id])
+  etudiant   Etudiant @relation(fields: [etudiantId], references: [id])
 
   @@id([coursId, etudiantId])
   @@map("inscriptions")
