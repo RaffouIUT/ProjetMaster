@@ -58,7 +58,7 @@ const SupprInterBlock = () => {
             const nomAvecEspace = intervenant.replace('.', ' ');
 
             const option = document.createElement('option');
-            option.value = nomAvecEspace.toLowerCase();
+            option.value = nomAvecEspace;
             option.text = nomAvecEspace;
             selectIntervenant.add(option);
         });
