@@ -4,7 +4,7 @@ import React, {useState} from 'react';
 import styles from '../app/styles/SideBlockPage.module.css';
 import ListeNomsPage from "@/components/AffIntervenants";
 import AjouterInterBlock from "src/components/AjouterInterBlock";
-import SupprInterBlock from "src/components/SupprInterBlock";
+import SupprInterBlock from "@/components/SupprInterBlock";
 import Button from "src/components/Button";
 import {generateInterListe} from "src/components/bddIntervenant";
 
