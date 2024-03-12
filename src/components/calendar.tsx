@@ -10,15 +10,15 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 
-import { FormCours, FormCoursVide, InterReduit } from '@/components/calendarEventUtils';
-import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/coursUtils';
-import { getAllInter } from '@/components/interUtils';
+import { FormCours, FormCoursVide, InterReduit } from '@/components/utils/customTypes';
+import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/utils/coursUtils';
+import { getAllInter } from '@/components/utils/interUtils';
 import '@/components/custom.css';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Promotion } from '@prisma/client';
-import { getAllPromo } from '@/components/promotionUtils';
+import { getAllPromo } from '@/components/utils/promotionUtils';
 
 export default function CalendarCustom()  {
 
@@ -65,12 +65,9 @@ export default function CalendarCustom()  {
         getAllInter().then((liste) => {
             setInters(liste);
         });
-    }, []);
-
-    useEffect(() => {
         getAllPromo().then((liste) => {
             setPromos(liste)
-        })
+        });
     }, []);
 
     const handleDateSelect = (dateSelected: DateSelectArg | null) => {
@@ -199,7 +196,7 @@ export default function CalendarCustom()  {
                 nom: nom,
                 date: datec,
                 salle: salle,
-                intervenant: {id: interId, nom: '', prenom: '', mail: ''},
+                intervenant: {id: interId, nom: '', prenom: '', mail: '', login: ''},
                 promo: {id: promoId, nom: '', abreviation: ''},
                 heureDeb: heure_deb,
                 heureFin: heure_fin
@@ -358,6 +355,7 @@ export default function CalendarCustom()  {
                     // @ts-ignore
                     ref={setCalendar}
                     initialView="dayGridMonth"
+                    timeZone={'UTC'}
                     plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
                     headerToolbar={{
                         left: 'prev,next today',

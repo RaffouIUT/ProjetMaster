@@ -4,11 +4,12 @@ export type InterReduit = {
     id: string,
     nom: string,
     prenom: string,
-    mail: string
+    mail: string,
+    login: string
 }
 
 export const InterReduitVide: InterReduit = {
-    id: '', mail: '', nom: '', prenom: ''
+    id: '', mail: '', nom: '', prenom: '', login: ''
 }
 
 export const PromotionVide: Promotion = {

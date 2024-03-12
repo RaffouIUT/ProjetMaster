@@ -48,6 +48,8 @@ model Promotion {
   abreviation String     @unique
   Etudiant    Etudiant[]
   Cours       Cours[]
+
+  @@map("promotions")
 }
 
 model Etudiant {

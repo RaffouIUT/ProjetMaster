@@ -1,7 +1,7 @@
 'use server';
 import db from '@/modules/db';
 import { EventInput } from '@fullcalendar/core';
-import { FormCours } from '@/components/calendarEventUtils';
+import { FormCours } from '@/components/utils/customTypes';
 
 export const getSeances = async () => {
     const liste: EventInput[] = [];

@@ -1,10 +1,7 @@
-'use client'
-import React, { useEffect } from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import styles from '../app/styles/AjouterInterBlock.module.css';
-import {generateInterListe, getListeNoms, handleSuppression} from "@/components/bddIntervenant";
-import {useState} from "react";
-import db from "@/modules/db";
-import Button from "src/components/Button";
+import { getListeNoms, handleSuppression } from '@/components/bddIntervenant';
 
 const SupprInterBlock = () => {
     const [intervenants, setIntervenants] = useState([]);
@@ -72,7 +69,7 @@ const SupprInterBlock = () => {
                     <select className={styles.bar} id="choixIntervenant" name="choixIntervenant"></select>
                 </div>
                 <div className={styles.button}>
-                    <Button onClick={handleValiderClick}>Valider</Button>
+                    <button onClick={handleValiderClick}>Valider</button>
                 </div>
             </div>
         </div>

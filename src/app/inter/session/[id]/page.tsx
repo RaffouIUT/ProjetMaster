@@ -1,10 +1,8 @@
 'use client';
-import {useQRCode} from "next-qrcode";
+import { useQRCode } from 'next-qrcode';
 import { SetStateAction, useEffect, useState } from 'react';
-import ProgressBar from "@/components/progressbar";
-import Button from '@/components/Button';
-import {handleCreerBdd} from '@/components/AjouterBdd';
-import {listeEtuPresents} from '@/components/listeEtuPresents';
+import ProgressBar from '@/components/progressbar';
+import { listeEtuPresents } from '@/components/listeEtuPresents';
 
 export default function Page({ params }: {
     params: {id: string}
@@ -84,7 +82,7 @@ export default function Page({ params }: {
             <div className={"w-1/4 h-full"}>
                 <div className={"h-1/6 flex items-center ml-5"}>
                     <button onClick={afficherRecherche} className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant </button>
-                    <Button onClick={handleCreerBdd} className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</Button>
+                    <button className={"ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight"}>?</button>
                 </div>
                 {
                     options ? (

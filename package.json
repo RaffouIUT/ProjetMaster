@@ -13,7 +13,8 @@
     "db:migrate": "set TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' && knex migrate:latest",
     "db:migrate:undo": "set TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' && knex migrate:down",
     "db:migrate:make": "set TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' && knex migrate:make",
-    "vercel-build": "prisma generate && npm run db:migrate && next build"
+    "vercel-build": "prisma generate && npm run db:migrate && next build",
+    "db:reset": "npx prisma migrate reset && npx prisma migrate dev --name init-db"
   },
   "dependencies": {
     "@babel/preset-react": "^7.23.3",
