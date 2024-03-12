@@ -42,27 +42,37 @@ model Administrateur {
   @@map("administrateurs")
 }
 
+model Promotion {
+  id          String     @id @default(cuid())
+  nom         String     @unique
+  abreviation String     @unique
+  Etudiant    Etudiant[]
+  Cours       Cours[]
+}
+
 model Etudiant {
   id           String        @id @default(cuid())
   nom          String
   prenom       String
-  promotion    String
+  promotion    Promotion     @relation(fields: [promotionId], references: [id])
   inscriptions Inscription[]
+  promotionId  String
 
   @@map("etudiants")
 }
 
 model Cours {
-  id             String        @id @default(cuid())
-  nom            String
-  dateDebut      DateTime
-  dateFin        DateTime
-  intervenantId  String
-  intervenant    Intervenant   @relation(fields: [intervenantId], references: [id])
-  promotionVisee String
-  updatedAt      DateTime      @updatedAt
-  inscriptions   Inscription[]
-  salle          String
+  id            String        @id @default(cuid())
+  nom           String
+  dateDebut     DateTime
+  dateFin       DateTime
+  intervenantId String
+  intervenant   Intervenant   @relation(fields: [intervenantId], references: [id])
+  promotion     Promotion     @relation(fields: [promotionId], references: [id])
+  updatedAt     DateTime      @updatedAt
+  inscriptions  Inscription[]
+  salle         String
+  promotionId   String
 
   @@map("cours")
 }
