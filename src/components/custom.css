@@ -1,0 +1,7 @@
+.required:after {
+    content: " *";
+    color: red;
+}
+.fc-event, .fc-daygrid-day-frame {
+    cursor: pointer!important;
+}

@@ -13,10 +13,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { FormCours, FormCoursVide, InterReduit } from '@/components/calendarEventUtils';
 import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/coursUtils';
 import { getAllInter } from '@/components/interUtils';
-import styles from '@/components/custom.module.css'
+import '@/components/custom.css';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Promotion } from '@prisma/client';
+import { getAllPromo } from '@/components/promotionUtils';
 
 export default function CalendarCustom()  {
 
@@ -29,6 +31,8 @@ export default function CalendarCustom()  {
     const [cours, setCours] = useState<EventInput[]>([]);
 
     const [inters, setInters] = useState<InterReduit[]>([]);
+
+    const [promos, setPromos] = useState<Promotion[]>([]);
 
     const [actualize, setActualize] = useState(true);
 
@@ -45,7 +49,6 @@ export default function CalendarCustom()  {
          * Le if permet de faire la requête que quand on demande une actualisation (2 fois moins de requêtes)
          */
         if (actualize) {
-            // TODO : régler problème date
             getSeances().then((liste) => {
                 setCours(liste);
                 setActualize(false)
@@ -62,6 +65,12 @@ export default function CalendarCustom()  {
         getAllInter().then((liste) => {
             setInters(liste);
         });
+    }, []);
+
+    useEffect(() => {
+        getAllPromo().then((liste) => {
+            setPromos(liste)
+        })
     }, []);
 
     const handleDateSelect = (dateSelected: DateSelectArg | null) => {
@@ -111,7 +120,6 @@ export default function CalendarCustom()  {
             heureDeb: event.startStr.split("T")[1].slice(0, 5),
             heureFin: event.endStr.split("T")[1].slice(0, 5),
             intervenant: event.extendedProps.intervenant,
-            intervenantId: event.extendedProps.intervenantId,
             promo: event.extendedProps.promo
         }
 
@@ -129,13 +137,13 @@ export default function CalendarCustom()  {
                     <>
                         <p className={"m-0"}>
                             <b>{eventContent.timeText}</b>
-                            <i>&nbsp; {eventContent.event.title}</i>
+                            <i>&nbsp; {eventContent.event.title} - {eventContent.event.extendedProps.promo.nom}</i>
                         </p>
                         <p className={"m-0"}>
                             <i>Salle : {eventContent.event.extendedProps.salle}</i>
                         </p>
                         <p className={'m-0'}>
-                            <i>Intervenant : {eventContent.event.extendedProps.intervenant}</i>
+                            <i>Intervenant : {eventContent.event.extendedProps.intervenant.prenom} {eventContent.event.extendedProps.intervenant.nom}</i>
                         </p>
                     </>
                 )
@@ -148,7 +156,7 @@ export default function CalendarCustom()  {
                             <b>{eventContent.timeText}</b>
                             <i>&nbsp; {eventContent.event.title}</i>
                             <i> - Salle : {eventContent.event.extendedProps.salle}</i>
-                            <i> - Intervenant : {eventContent.event.extendedProps.intervenant}</i>
+                            <i> - Intervenant : {eventContent.event.extendedProps.intervenant.prenom} {eventContent.event.extendedProps.intervenant.nom}</i>
                         </p>
                     </>
                 )
@@ -181,9 +189,9 @@ export default function CalendarCustom()  {
         const heure_deb = e.target.heure_deb_cours.value
         const heure_fin = e.target.heure_fin_cours.value
         const interId = e.target.inter_cours[e.target.inter_cours.selectedIndex].id
-        const promo = e.target.promo_cours.value
+        const promoId = e.target.promo_cours[e.target.promo_cours.selectedIndex].id
 
-        if (calendarRef != null && checkField(nom) && checkField(salle) && checkField(promo) && checkField(interId)
+        if (calendarRef != null && checkField(nom) && checkField(salle) && checkField(promoId) && checkField(interId)
             && checkField(datec, "date") && checkField(heure_deb, "time") && checkField(heure_fin, "time")) {
 
             let newCours: FormCours = {
@@ -191,9 +199,8 @@ export default function CalendarCustom()  {
                 nom: nom,
                 date: datec,
                 salle: salle,
-                intervenant: '',
-                intervenantId: interId,
-                promo: promo,
+                intervenant: {id: interId, nom: '', prenom: '', mail: ''},
+                promo: {id: promoId, nom: '', abreviation: ''},
                 heureDeb: heure_deb,
                 heureFin: heure_fin
             };
@@ -236,7 +243,7 @@ export default function CalendarCustom()  {
                     notifySuccess("Le cours a bien été supprimé !")
                     toggle();
                 }).catch((e: any) => {
-                    notifyFailure("Erreur lors de la suppresion en BD.");
+                    notifyFailure("Erreur lors de la suppression en BD.");
                     console.log(e);
                 })
             }
@@ -245,12 +252,110 @@ export default function CalendarCustom()  {
         }
     }
 
+    const Form_cours = () => {
+        return (
+            <>
+                <Modal isOpen={modal} toggle={toggle}>
+                    <ModalHeader toggle={toggle}>Ajouter un cours</ModalHeader>
+                    <ModalBody>
+                        <Form className={"form"} onSubmit={event => handleSubmit(event)}>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"nomc"} className={"required"}>Nom du cours</Label>
+                                        <Input id={"nomc"} name={"nom_cours"} type={"text"} defaultValue={formData.nom} required/>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"datec"} className={"required"}>Date du cours</Label>
+                                        <Input id={"datec"} name={"date_cours"} type={"date"} defaultValue={formData.date} required/>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"sallec"} className={"required"}>Nom de la salle</Label>
+                                        <Input id={"sallec"} name={"salle_cours"} type={"text"} defaultValue={formData.salle} required/>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"heuredebc"} className={"required"}>Heure de début de cours</Label>
+                                        <Input id={"heuredebc"} name={"heure_deb_cours"} type={"time"} defaultValue={formData.heureDeb} required/>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"promoc"} className={"required"}>Promotion</Label>
+                                        <Input id={"interc"} name={"promo_cours"} type={"select"} defaultValue={formData.promo.id} required>
+                                            {promos.map((promo) => (
+                                                <option id={promo.id} key={promo.id}>{promo.nom}</option>
+                                            ))}
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={6}>
+                                    <FormGroup>
+                                        <Label for={"heurefinc"} className={"required"}>Heure de fin de cours</Label>
+                                        <Input id={"heurefinc"} name={"heure_fin_cours"} type={"time"} defaultValue={formData.heureFin} required/>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={12}>
+                                    <FormGroup>
+                                        <Label for={"interc"} className={"required"}>Nom de l'intervenant</Label>
+                                        <Input id={'interc'} name={'inter_cours'} type={'select'}
+                                               defaultValue={formData.intervenant.id} required>
+                                            {inters.map((inter) => (
+                                                <option id={inter.id} key={inter.id}>{inter.prenom} {inter.nom}</option>
+                                            ))}
+                                        </Input>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <Button color="primary" className={"form-control"} type={"submit"}>
+                                        {formData.id == '' ? "Ajouter" : "Modifier"}
+                                    </Button>{' '}
+                                </Col>
+                                <Col md={6}>
+                                    <Button color={formData.id == '' ? "secondary" : "danger"} className={"form-control"} onClick={handleRemoveOrCancel}>
+                                        {formData.id == '' ? "Annuler" : "Supprimer"}
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </ModalBody>
+                </Modal>
+            </>
+        );
+    }
+
+    const menuLateral = () => {
+        return (
+            <div className={"basis-1/4 p-3 flex flex-col items-center"}>
+                <Button color="primary" className={"form-control my-2"} onClick={() => handleDateSelect(null)}>
+                    Ajouter un cours
+                </Button>
+                <Button color="secondary" className={"form-control my-2"}>Gérer données présence</Button>
+                <Button color="secondary" className={"form-control my-2"}>Paramètres</Button>
+                <Form_cours />
+            </div>
+        )
+    }
+
     return (
         <>
             {menuLateral()}
             <div className={"basis-3/4 p-3 min-h-full"}>
                 <FullCalendar
-                  // @ts-ignore
+                    // @ts-ignore
                     ref={setCalendar}
                     initialView="dayGridMonth"
                     plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
@@ -266,7 +371,6 @@ export default function CalendarCustom()  {
                         day: "jour"
                     }}
                     locale="fr"
-                    editable={true}
                     selectable={true}
                     select={handleDateSelect}
                     weekends={false}
@@ -279,97 +383,4 @@ export default function CalendarCustom()  {
             </div>
         </>
     );
-
-    function menuLateral() {
-        return (
-            <div className={"basis-1/4 p-3 flex flex-col items-center"}>
-                <Button color="primary" className={"form-control my-2"} onClick={() => handleDateSelect(null)}>
-                    Ajouter un cours
-                </Button>
-                <Button color="secondary" className={"form-control my-2"}>Gérer données présence</Button>
-                <Button color="secondary" className={"form-control my-2"}>Paramètres</Button>
-                <Form_cours />
-            </div>
-        )
-    }
-
-    function Form_cours() {
-        return (
-          <>
-              <Modal isOpen={modal} toggle={toggle}>
-                  <ModalHeader toggle={toggle}>Ajouter un cours</ModalHeader>
-                  <ModalBody>
-                      <Form className={"form"} onSubmit={event => handleSubmit(event)}>
-                          <Row>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"nomc"} className={styles.required}>Nom du cours</Label>
-                                      <Input id={"nomc"} name={"nom_cours"} type={"text"} defaultValue={formData.nom} required/>
-                                  </FormGroup>
-                              </Col>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"datec"} className={styles.required}>Date du cours</Label>
-                                      <Input id={"datec"} name={"date_cours"} type={"date"} defaultValue={formData.date} required/>
-                                  </FormGroup>
-                              </Col>
-                          </Row>
-                          <Row>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"sallec"} className={styles.required}>Nom de la salle</Label>
-                                      <Input id={"sallec"} name={"salle_cours"} type={"text"} defaultValue={formData.salle} required/>
-                                  </FormGroup>
-                              </Col>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"heuredebc"} className={styles.required}>Heure de début de cours</Label>
-                                      <Input id={"heuredebc"} name={"heure_deb_cours"} type={"time"} defaultValue={formData.heureDeb} required/>
-                                  </FormGroup>
-                              </Col>
-                          </Row>
-                          <Row>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"promoc"} className={styles.required}>Promotion</Label>
-                                      <Input id={"promoc"} name={"promo_cours"} type={"text"} defaultValue={formData.promo} required/>
-                                  </FormGroup>
-                              </Col>
-                              <Col md={6}>
-                                  <FormGroup>
-                                      <Label for={"heurefinc"} className={styles.required}>Heure de fin de cours</Label>
-                                      <Input id={"heurefinc"} name={"heure_fin_cours"} type={"time"} defaultValue={formData.heureFin} required/>
-                                  </FormGroup>
-                              </Col>
-                          </Row>
-                          <Row>
-                              <Col md={12}>
-                                  <FormGroup>
-                                      <Label for={"interc"} className={styles.required}>Nom de l'intervenant</Label>
-                                      <Input id={"interc"} name={"inter_cours"} type={"select"} defaultValue={formData.intervenantId} required>
-                                          {inters.map((inter) => (
-                                              <option id={inter.id}>{inter.prenom} {inter.nom}</option>
-                                          ))}
-                                      </Input>
-                                  </FormGroup>
-                              </Col>
-                          </Row>
-                          <Row>
-                              <Col md={6}>
-                                  <Button color="primary" className={"form-control"} type={"submit"}>
-                                      {formData.id == '' ? "Ajouter" : "Modifier"}
-                                  </Button>{' '}
-                              </Col>
-                              <Col md={6}>
-                                  <Button color={formData.id == '' ? "secondary" : "danger"} className={"form-control"} onClick={handleRemoveOrCancel}>
-                                      {formData.id == '' ? "Annuler" : "Supprimer"}
-                                  </Button>
-                              </Col>
-                          </Row>
-                      </Form>
-                  </ModalBody>
-              </Modal>
-          </>
-        );
-    }
 };

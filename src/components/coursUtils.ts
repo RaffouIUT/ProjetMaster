@@ -1,7 +1,6 @@
 'use server';
 import db from '@/modules/db';
 import { EventInput } from '@fullcalendar/core';
-import { revalidatePath } from 'next/cache';
 import { FormCours } from '@/components/calendarEventUtils';
 
 export const getSeances = async () => {
@@ -16,7 +15,13 @@ export const getSeances = async () => {
                     nom: true
                 }
             },
-
+            promotion: {
+                select: {
+                    id: true,
+                    nom: true,
+                    abreviation: true
+                }
+            }
         }
     });
     // l'heure est bonne en sortie de BD
@@ -27,16 +32,12 @@ export const getSeances = async () => {
             start: new Date(cours.dateDebut),
             end: new Date(cours.dateFin),
             extendedProps: {
-                intervenantId: cours.intervenantId,
-                intervenant: cours.intervenant.prenom + " " + cours.intervenant.nom,
+                intervenant: cours.intervenant,
                 salle: cours.salle,
-                promo: cours.promotionVisee
+                promo: cours.promotion
             },
         })
     ))
-    // Bonne heure en sortie de BD
-    console.log(liste)
-
     return liste
 };
 
@@ -47,8 +48,8 @@ export const addSeance = async (data: FormCours) => {
             dateDebut: new Date(data.date + "T" + data.heureDeb +":00.000Z"),
             dateFin: new Date(data.date + "T" + data.heureFin + ":00.000Z"),
             salle: data.salle,
-            promotionVisee: data.promo,
-            intervenantId: data.intervenantId
+            promotionId: data.promo.id,
+            intervenantId: data.intervenant.id
         }
     });
 };
@@ -63,8 +64,8 @@ export const updateSeance = async (data: FormCours) => {
             dateDebut:  new Date(data.date + "T" + data.heureDeb +":00.000Z"),
             dateFin: new Date(data.date + "T" + data.heureFin + ":00.000Z"),
             salle: data.salle,
-            promotionVisee: data.promo,
-            intervenantId: data.intervenantId
+            promotionId: data.promo.id,
+            intervenantId: data.intervenant.id
         }
     })
 };
