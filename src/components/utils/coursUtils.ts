@@ -77,3 +77,11 @@ export const deleteSeance = async (id: string) => {
         }
     })
 };
+
+export const getSeanceById = async (id: string) => {
+    return db.cours.findUnique({
+        where: {
+            id: id
+        }
+    });
+}
