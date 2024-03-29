@@ -3,17 +3,22 @@ import { useQRCode } from 'next-qrcode';
 import { SetStateAction, useEffect, useState } from 'react';
 import ProgressBar from '@/components/progressbar';
 import { listeEtuPresents } from '@/components/listeEtuPresents';
+import { Etudiant } from '@/components/utils/customTypes';
+import { getListeEtuByIdNotInList } from '@/components/utils/etuUtils';
+import { addInscription } from '@/components/utils/inscriptionsUtils';
 
 export default function Page({ params }: {
     params: {id: string}
 }) {
-    const [listeEtu, setListeEtu] = useState<String[]>([]);
+    const [actualize, setActualize] = useState<boolean>(true);
+    const [idEtuAAjouter, setIdEtuAAjouter] = useState<string>();
+    const [listeEtu, setListeEtu] = useState<Etudiant[]>([]);
+    const [listeEtuNonPresents, setListeEtuNonPresents] = useState<Etudiant[]>([]);
     const {SVG} = useQRCode();
     const [options, setOption] = useState<boolean>(false)
     const [recherche, setRecherche] = useState<boolean>(false)
     const [code, setCode] = useState<boolean>(false)
     const [nom_recherche, setNom_recherche] = useState('');
-    const listeEtuMatch: String[] = [];
     const [TempsMaxQR, setTempsMaxQR] = useState(12);
     const [BuffTempsMaxQR, setBuffTempsMaxQR] = useState(TempsMaxQR);
     const [TempsQR, setTempsQR] = useState(TempsMaxQR);
@@ -22,10 +27,44 @@ export default function Page({ params }: {
     }
 
     useEffect(() => {
-        listeEtuPresents(params.id).then((liste) => {
-            setListeEtu(liste);
-        });
-    });
+        if(actualize) {
+            setActualize(false);
+            let listePresents: Etudiant[] = [];
+            listeEtuPresents(params.id).then((liste) => {
+                setListeEtu(liste);
+                listePresents = liste;
+                getListeEtuByIdNotInList(listePresents.map((etu) => etu.id)).then((listeNonPresents) => {
+                    setListeEtuNonPresents(listeNonPresents);
+                });
+            })
+        }
+    },[actualize, params.id]);
+
+    const refresh = () => {
+        setTimeout(() => {
+            setActualize(true);
+        }, 50);
+    }
+
+    useEffect(() => {
+        if(idEtuAAjouter === undefined) return;
+        addInscription(params.id, idEtuAAjouter)
+          .then(() => {
+              setIdEtuAAjouter(undefined);
+              refresh();
+          })
+    }, [idEtuAAjouter, params.id]);
+
+    function actualiserListeMatch(){
+        let listeEtuMatch: Etudiant[] = [];
+        // on actualise la liste des étudiants qui matchent avec la recherche de l'intervenant
+        listeEtuNonPresents.map((etu) => {
+            if ((etu.nom+" "+etu.prenom).match(nom_recherche)) {
+                listeEtuMatch.push(etu);
+            }
+        })
+        return listeEtuMatch;
+    }
 
     setTimeout(() => {
         if(TempsQR > 0){
@@ -41,12 +80,6 @@ export default function Page({ params }: {
         setNom_recherche(event.target.value);
     };
 
-    // on actualise la liste des étudiants qui matchent avec la recherche de l'intervenant
-    listeEtu.map((etu) => {
-        if (etu.match(nom_recherche)) {
-            listeEtuMatch.push(etu);
-        }
-    })
 
     const afficherCode = () => {
         setCode(!code);
@@ -65,14 +98,6 @@ export default function Page({ params }: {
             setRecherche(false);
         }
         setOption(!options);
-    }
-
-    const fermerOptions = () => {
-        setOption(false);
-    }
-
-    const fermerRecherche = () => {
-        setRecherche(false);
     }
 
     return (
@@ -102,9 +127,13 @@ export default function Page({ params }: {
                                 <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50}
                                        className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
                                 <div className={'text-center overflow-scroll max-h-96'}>
-                                    {/*TODO Système d'ajout de l'etu dans la session en cours sur bdd*/}
-                                    {listeEtuMatch.map((etu) => (
-                                      <p>{etu}</p>
+                                    {actualiserListeMatch().map((etu) => (
+                                      <button key={etu.id}
+                                              type="button"
+                                              onClick={() => {
+                                                  setIdEtuAAjouter(etu.id);
+                                                  setActualize(true);
+                                              }}>{etu.nom + ' ' + etu.prenom}</button>
                                     ))}
                                 </div>
                             </div>
@@ -158,7 +187,7 @@ export default function Page({ params }: {
             <div className={"w-1/4 bg-gray-400 h-full"}>
                 <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
                 <div className={"h-5/6 text-center max-h-full overflow-scroll "}> {  listeEtu.map((etu) => (
-                  <p>{etu}</p>
+                  <p key={etu.id}>{etu.nom + ' ' + etu.prenom}</p>
                 ))}</div>
             </div>
         </div>

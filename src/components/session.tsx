@@ -1,6 +1,7 @@
 import db from '@/modules/db';
 import { JSX } from 'react';
 import Link from 'next/link';
+import { rechercherInter } from '@/components/utils/interUtils';
 
 export default async function Session() {
   let liste: JSX.Element[] = [];
@@ -14,14 +15,6 @@ export default async function Session() {
       dateDebut: 'asc',
     },
   })
-
-  async function rechercherInter(id_inter: string) {
-    return db.intervenant.findUnique({
-      where: {
-        id: id_inter,
-      },
-    });
-  }
 
   /*TODO fixer les dates il y a rien qui va*/
   function fabriquerDateString(date: Date) {
