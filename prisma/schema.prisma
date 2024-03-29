@@ -75,6 +75,7 @@ model Cours {
   inscriptions  Inscription[]
   salle         String
   promotionId   String
+  tokenQrCode   String
 
   @@map("cours")
 }
