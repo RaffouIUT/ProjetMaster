@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../app/styles/AjouterInterBlock.module.css';
 import { getListeNoms, handleSuppression } from '@/components/bddIntervenant';
+import {UEProckerSwitch} from "@/components/AffIntervenants";
 
 const SupprInterBlock = () => {
     const [intervenants, setIntervenants] = useState([]);
 
     useEffect(() => {
-        console.log('montage useeffect');
         let isMounted = true;
 
         const fetchData = async () => {
@@ -28,23 +28,22 @@ const SupprInterBlock = () => {
         };
     }, []);
 
+
     const handleValiderClick = async () => {
-        console.log('Je clique');
         const selectIntervenant = document.getElementById('choixIntervenant');
-        console.log('checkpoint 1');
         if (selectIntervenant instanceof HTMLSelectElement) {
-            console.log('checkpoint 2');
             const nomIntervenant = selectIntervenant.value;
-            console.log('checkpoint 3 '+nomIntervenant);
             await handleSuppression(nomIntervenant);
         }
-        console.log('Traitement terminé');
         // Mettez à jour la liste des intervenants après la suppression
         const updatedIntervenants = await getListeNoms();
         setIntervenants(updatedIntervenants);
+        UEProckerSwitch();
     };
 
+
     useEffect(() => {
+        console.log("test");
         const selectIntervenant = document.getElementById('choixIntervenant');
 
         // Effacer la liste déroulante avant d'ajouter les nouvelles options
@@ -59,7 +58,7 @@ const SupprInterBlock = () => {
             option.text = nomAvecEspace;
             selectIntervenant.add(option);
         });
-    }, [intervenants, setIntervenants]);
+    }, [intervenants]);
 
     return (
         <div className={styles.MiddleSideBlock}>
@@ -69,7 +68,7 @@ const SupprInterBlock = () => {
                     <select className={styles.bar} id="choixIntervenant" name="choixIntervenant"></select>
                 </div>
                 <div className={styles.button}>
-                    <button onClick={handleValiderClick}>Valider</button>
+                    <button onClick={handleValiderClick} type="button">Valider</button>
                 </div>
             </div>
         </div>

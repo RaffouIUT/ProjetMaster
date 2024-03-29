@@ -8,6 +8,12 @@ export type InterReduit = {
     login: string
 }
 
+export type Etudiant = {
+    id: string,
+    nom: string,
+    prenom: string,
+}
+
 export const InterReduitVide: InterReduit = {
     id: '', mail: '', nom: '', prenom: '', login: ''
 }
