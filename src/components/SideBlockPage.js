@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import styles from '../app/styles/SideBlockPage.module.css';
-import ListeNomsPage from '@/components/AffIntervenants';
+import {ListeNomsPage} from '@/components/AffIntervenants';
 import AjouterInterBlock from 'src/components/AjouterInterBlock';
 import SupprInterBlock from '@/components/SupprInterBlock';
 import { generateInterListe } from 'src/components/bddIntervenant';
+import Link from "next/link";
 
 
 const liste_inter = [
@@ -52,10 +53,14 @@ const SideBlockPage = () => {
                         <button className={styles.button} onClick={toggleVisibilitySupprimer} type="button">Supprimer un intervenant </button>
                     </p>
                     <p>
-                        <button className={styles.button} type="button">Gérer les données de présence</button>
+                        <Link href={"http://localhost:3000/admin/presence"}>
+                            <button className={styles.button} type="button">Gérer les données de présence</button>
+                        </Link>
                     </p>
                     <p>
-                        <button className={styles.button} onClick={generateInterListe}>Gérer les séances</button>
+                        <Link href={"http://localhost:3000/admin/seance"}>
+                            <button className={styles.button} type="button">Gérer les séances</button>
+                        </Link>
                     </p>
                 </div>
             </div>

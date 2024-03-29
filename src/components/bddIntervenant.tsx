@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 export const generateInterListe = async () => {
     await db.intervenant.createMany({
         data: [
-            {nom: "Helloworld", prenom: "Test", mail: "test.test@test.com", login: "Tester.test", password: "Test1234"}
+            {nom: "test", prenom: "test", mail: "test.test@test.com", login: "test.test", password: "Test1234"}
         ],
     });
     revalidatePath('/');

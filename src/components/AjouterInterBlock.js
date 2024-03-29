@@ -1,7 +1,8 @@
 'use client'
 import styles from '../app/styles/AjouterInterBlock.module.css';
-import {AjoutInterBDD} from "@/components/bddIntervenant";
+import {AjoutInterBDD, getListeNoms} from "@/components/bddIntervenant";
 import React, { useState } from 'react';
+import {ListeNomsPage, UEProcker, UEProckerSwitch} from "@/components/AffIntervenants";
 
 const AjouterInterBlock = () => {
     const inter = "l'intervenant";
@@ -15,6 +16,7 @@ const AjouterInterBlock = () => {
         setNom("");
         setPrenom("");
         setMail("");
+        UEProckerSwitch();
     };
 
     return (
