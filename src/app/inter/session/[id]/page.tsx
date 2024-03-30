@@ -6,10 +6,13 @@ import { listeEtuPresents } from '@/components/listeEtuPresents';
 import { Etudiant } from '@/components/utils/customTypes';
 import { getListeEtuByIdNotInList } from '@/components/utils/etuUtils';
 import { addInscription } from '@/components/utils/inscriptionsUtils';
+import { setTokenById } from '@/components/utils/coursUtils';
 
 export default function Page({ params }: {
     params: {id: string}
 }) {
+    const [uneFois, setUneFois] = useState<boolean>(true);
+    const [tokenQr, setTokenQr] = useState<string>('');
     const [actualize, setActualize] = useState<boolean>(true);
     const [idEtuAAjouter, setIdEtuAAjouter] = useState<string>();
     const [listeEtu, setListeEtu] = useState<Etudiant[]>([]);
@@ -25,6 +28,13 @@ export default function Page({ params }: {
     const handleBuffTempsMaxQR = (event: { target: { value: string; }; }) => {
         setTempsMaxQR(parseInt(event.target.value));
     }
+
+    useEffect(() => {
+        if(uneFois) {
+            actualiserToken();
+            setUneFois(false);
+        }
+    }, []);
 
     useEffect(() => {
         if(actualize) {
@@ -72,7 +82,7 @@ export default function Page({ params }: {
         }else{
             setTempsQR(TempsMaxQR);
             setBuffTempsMaxQR(TempsMaxQR);
-            {/*TODO CHANGER QR CODE*/}
+            actualiserToken();
         }
     }, 1000);
 
@@ -80,6 +90,20 @@ export default function Page({ params }: {
         setNom_recherche(event.target.value);
     };
 
+    const generateToken = ():string => {
+        let token:string = "";
+        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for (let i = 0; i < 15; i++)
+            token += possible.charAt(Math.floor(Math.random() * possible.length));
+        return token;
+    }
+
+    const actualiserToken = () => {
+        let token:string = generateToken();
+        setTokenById(params.id, token)
+        setTokenQr(token);
+        console.log("nouveau token : "+token);
+    }
 
     const afficherCode = () => {
         setCode(!code);
@@ -158,7 +182,7 @@ export default function Page({ params }: {
                 {/* QR CODE */}
                 <div className={"flex justify-center mt-4"}>
                     <SVG
-                        text={'http://localhost:3000/inter/session'}
+                        text={'http://localhost:3000/etu/'+params.id+'/'+tokenQr}
                         options={{
                             errorCorrectionLevel: 'M',
                             margin: 0,
@@ -174,8 +198,7 @@ export default function Page({ params }: {
                 {
                     code ? (
                         <div className={"flex text-xl text-center justify-center"}>Code et lien pour s’inscrire :<br/>
-                            https://inscription-cours.univ-lemans.fr<br/>
-                            256318342
+                            {'http://localhost:3000/etu/' + params.id + '/' + tokenQr}
                         </div>
                     ) : (
                         <div className={"flex text-xl text-center justify-center"}>Veuillez cliquer sur le boutton pour afficher le code</div>
