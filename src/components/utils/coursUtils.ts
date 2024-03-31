@@ -48,7 +48,8 @@ export const addSeance = async (data: FormCours) => {
             dateFin: new Date(data.date + "T" + data.heureFin + ":00.000Z"),
             salle: data.salle,
             promotionId: data.promo.id,
-            intervenantId: data.intervenant.id
+            intervenantId: data.intervenant.id,
+            tokenQrCode: ""
         }
     });
 };
