@@ -2,6 +2,7 @@
 
 import db from "@/modules/db";
 import { revalidatePath } from "next/cache";
+import nodemailer from 'nodemailer';
 
 
 export const generateInterListe = async () => {
@@ -62,4 +63,39 @@ export const handleSuppression = async (nomIntervenant: string) => {
         console.error('Erreur lors de la suppression de l\'intervenant:', error);
     }
 };
+
+interface EmailOptions {
+    to: string;
+    subject: string;
+    text: string;
+}
+
+export async function sendEmail(options: EmailOptions): Promise<void> {
+    // Créez un transporteur SMTP réutilisable
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'leo.notelet@gmail.com',
+            pass: 'wldp qqdo zqoy juac'
+        }
+    });
+
+    // Définissez les options de l'e-mail
+    let mailOptions = {
+        from: 'leo.notelet@gmail.com',
+        to: options.to,
+        subject: options.subject,
+        text: options.text
+    };
+
+    // Envoyez l'e-mail
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('E-mail envoyé avec succès');
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'e-mail:', error);
+        throw new Error('Une erreur s\'est produite lors de l\'envoi de l\'e-mail');
+    }
+}
+
 

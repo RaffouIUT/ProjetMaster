@@ -1,6 +1,6 @@
 'use client'
 import styles from '../app/styles/AjouterInterBlock.module.css';
-import {AjoutInterBDD, getListeNoms} from "@/components/bddIntervenant";
+import {AjoutInterBDD, getListeNoms, sendEmail} from "@/components/bddIntervenant";
 import React, { useState } from 'react';
 import {ListeNomsPage, UEProcker, UEProckerSwitch} from "@/components/AffIntervenants";
 
@@ -10,14 +10,19 @@ const AjouterInterBlock = () => {
     const [prenom, setPrenom] = useState("");
     const [mail, setMail] = useState("");
 
+    const handleSendEmail = async (nom, prenom, email) => {
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
+                text: 'Bonjour '+ nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans'
+            });
+            console.log('E-mail envoyé avec succès');
+        } catch (error) {
+            alert('Une erreur s\'est produite lors de l\'envoi de l\'e-mail');
+        }
+    };
 
-    /*const handleValiderClick = async () => {
-        await AjoutInterBDD(nom, prenom, mail);
-        setNom("");
-        setPrenom("");
-        setMail("");
-        UEProckerSwitch();
-    };*/
 
     const handleValiderClick = async () => {
         // Vérification du format du nom et du prénom
@@ -39,6 +44,7 @@ const AjouterInterBlock = () => {
 
         // Ajout dans la base de données
         await AjoutInterBDD(nom, prenom, mail);
+        await handleSendEmail(nom, prenom, mail);
         setNom("");
         setPrenom("");
         setMail("");

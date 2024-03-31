@@ -45,7 +45,7 @@ const SupprInterBlock = () => {
 
 
     useEffect(() => {
-        console.log("test");
+        //console.log("test moi");
         const selectIntervenant = document.getElementById('choixIntervenant');
 
         // Effacer la liste déroulante avant d'ajouter les nouvelles options
