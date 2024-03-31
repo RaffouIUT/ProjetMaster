@@ -24,7 +24,6 @@ export const getSeances = async () => {
             }
         }
     });
-    // l'heure est bonne en sortie de BD
     response.map((cours) => (
         liste.push({
             id: cours.id,
@@ -84,6 +83,14 @@ export const getSeanceById = async (id: string) => {
             id: id
         }
     });
+}
+
+export const getAllCoursByPromoId = async(promoId: string) => {
+    return db.cours.findMany({
+        where: {
+            promotionId: promoId
+        }
+    })
 }
 
 export const getTokenById = async (id: string) => {

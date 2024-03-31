@@ -161,7 +161,6 @@ export default function CalendarCustom()  {
     }
 
     const checkField = (data: string, typeField: string = "text") : boolean => {
-
         switch (typeField) {
             case "date":
                 return !!(data && data.trim().length > 0 &&
@@ -174,7 +173,6 @@ export default function CalendarCustom()  {
             case "text":
             default:
                 return !!(data && data.trim().length > 0);
-
         }
     }
 
@@ -185,47 +183,50 @@ export default function CalendarCustom()  {
         const salle = e.target.salle_cours.value
         const heure_deb = e.target.heure_deb_cours.value
         const heure_fin = e.target.heure_fin_cours.value
-        const interId = e.target.inter_cours[e.target.inter_cours.selectedIndex].id
-        const promoId = e.target.promo_cours[e.target.promo_cours.selectedIndex].id
+        const interId = e.target.inter_cours.value
+        const promoId = e.target.promo_cours.value
 
         if (calendarRef != null && checkField(nom) && checkField(salle) && checkField(promoId) && checkField(interId)
-            && checkField(datec, "date") && checkField(heure_deb, "time") && checkField(heure_fin, "time")) {
+            && checkField(datec, "date") && checkField(heure_deb, "time") && checkField(heure_fin, "time")){
 
-            let newCours: FormCours = {
-                id: '',
-                nom: nom,
-                date: datec,
-                salle: salle,
-                intervenant: {id: interId, nom: '', prenom: '', mail: '', login: ''},
-                promo: {id: promoId, nom: '', abreviation: ''},
-                heureDeb: heure_deb,
-                heureFin: heure_fin
-            };
+            if (heure_deb != heure_fin) {
+                let newCours: FormCours = {
+                    id: '',
+                    nom: nom,
+                    date: datec,
+                    salle: salle,
+                    intervenant: { id: interId, nom: '', prenom: '', mail: '', login: '' },
+                    promo: { id: promoId, nom: '', abreviation: '' },
+                    heureDeb: heure_deb,
+                    heureFin: heure_fin
+                };
 
-            // Ajout ou mise à jour de la séance dans la base de données
-            if (formData.id == '') {
-                // Si le formulaire était vide quand on a chargé la modale, alors le cours vient d'être crée
-                addSeance(newCours).then( () => {
-                    setActualize(true)
-                    notifySuccess("Le cours a bien été ajouté !")
-                    toggle();
-                }).catch((e: any) => {
-                    notifyFailure("Erreur lors de l'insertion BD.");
-                    console.log(e);
-                })
+                // Ajout ou mise à jour de la séance dans la base de données
+                if (formData.id == '') {
+                    // Si le formulaire était vide quand on a chargé la modale, alors le cours vient d'être crée
+                    addSeance(newCours).then(() => {
+                        setActualize(true)
+                        notifySuccess("Le cours a bien été ajouté !")
+                        toggle();
+                    }).catch((e: any) => {
+                        notifyFailure("Erreur lors de l'insertion BD.");
+                        console.log(e);
+                    })
+                } else {
+                    // Sinon, on modifie un cours déjà enregistré
+                    newCours.id = formData.id;
+                    updateSeance(newCours).then(() => {
+                        setActualize(true)
+                        notifySuccess("Le cours a bien été modifié !")
+                        toggle();
+                    }).catch((e: any) => {
+                        notifyFailure("Erreur lors de l'insertion BD.");
+                        console.log(e);
+                    })
+                }
             } else {
-                // Sinon, on modifie un cours déjà enregistré
-                newCours.id = formData.id;
-                updateSeance(newCours).then(() => {
-                    setActualize(true)
-                    notifySuccess("Le cours a bien été modifié !")
-                    toggle();
-                }).catch((e: any) => {
-                    notifyFailure("Erreur lors de l'insertion BD.");
-                    console.log(e);
-                })
+                notifyFailure("L'heure de début et de fin doit être différente.")
             }
-
 
         } else {
             notifyFailure("Erreur de saisie dans le formulaire.")
@@ -288,9 +289,9 @@ export default function CalendarCustom()  {
                                 <Col md={6}>
                                     <FormGroup>
                                         <Label for={"promoc"} className={"required"}>Promotion</Label>
-                                        <Input id={"interc"} name={"promo_cours"} type={"select"} defaultValue={formData.promo.id} required>
+                                        <Input id={"promoc"} name={"promo_cours"} type={"select"} defaultValue={formData.promo.id} required>
                                             {promos.map((promo) => (
-                                                <option id={promo.id} key={promo.id}>{promo.nom}</option>
+                                                <option value={promo.id} key={promo.id}>{promo.nom}</option>
                                             ))}
                                         </Input>
                                     </FormGroup>
@@ -309,7 +310,7 @@ export default function CalendarCustom()  {
                                         <Input id={'interc'} name={'inter_cours'} type={'select'}
                                                defaultValue={formData.intervenant.id} required>
                                             {inters.map((inter) => (
-                                                <option id={inter.id} key={inter.id}>{inter.prenom} {inter.nom}</option>
+                                                <option value={inter.id} key={inter.id}>{inter.prenom} {inter.nom}</option>
                                             ))}
                                         </Input>
                                     </FormGroup>

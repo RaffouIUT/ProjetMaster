@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page()  {
     return (
-        /* section gestion des séances du module intervenant */
+        /* section gestion des séances du module administrateur */
         <section className="flex flex-row min-h-screen">
             <ToastContainer />
             <CalendarCustom />

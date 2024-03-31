@@ -1,4 +1,4 @@
-import { Promotion } from '@prisma/client'
+import { Cours, Promotion } from '@prisma/client';
 
 export type InterReduit = {
     id: string,
@@ -42,4 +42,13 @@ export const FormCoursVide: FormCours = {
     promo: structuredClone(PromotionVide),
     heureDeb: '',
     heureFin: ''
+}
+
+export type PresenceCours = {
+    cours: Cours,
+    present: boolean,
+}
+export type PresenceEtuCours = {
+    etudiant: Etudiant,
+    cours: PresenceCours[]
 }

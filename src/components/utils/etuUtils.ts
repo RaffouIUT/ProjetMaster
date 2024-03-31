@@ -25,3 +25,11 @@ export const getListeEtuByIdNotInList = async (listeIdEtu: string[]) => {
     }
   })
 }
+
+export const getAllEtuByPromoId = async(promoId: string) => {
+  return db.etudiant.findMany({
+    where: {
+      promotionId: promoId
+    }
+  })
+}
