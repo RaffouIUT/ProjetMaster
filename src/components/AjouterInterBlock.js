@@ -11,7 +11,33 @@ const AjouterInterBlock = () => {
     const [mail, setMail] = useState("");
 
 
+    /*const handleValiderClick = async () => {
+        await AjoutInterBDD(nom, prenom, mail);
+        setNom("");
+        setPrenom("");
+        setMail("");
+        UEProckerSwitch();
+    };*/
+
     const handleValiderClick = async () => {
+        // Vérification du format du nom et du prénom
+        const nomRegex = /^[A-Z][a-z]*$/;
+        const prenomRegex = /^[A-Z][a-z]*$/;
+
+        if (!nom.match(nomRegex) || !prenom.match(prenomRegex)) {
+            alert("Le nom et le prénom doivent commencer par une majuscule suivie de minuscules sans chiffre.");
+            return;
+        }
+
+        // Vérification du format de l'adresse e-mail
+        const mailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!mail.match(mailRegex)) {
+            alert("Veuillez saisir une adresse e-mail valide.");
+            return;
+        }
+
+        // Ajout dans la base de données
         await AjoutInterBDD(nom, prenom, mail);
         setNom("");
         setPrenom("");

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../app/styles/AjouterInterBlock.module.css';
 import { getListeNoms, handleSuppression } from '@/components/bddIntervenant';
-import {UEProckerSwitch} from "@/components/AffIntervenants";
+import {UEProckerSwitch , UEProcker} from "@/components/AffIntervenants";
 
 const SupprInterBlock = () => {
     const [intervenants, setIntervenants] = useState([]);
@@ -38,7 +38,9 @@ const SupprInterBlock = () => {
         // Mettez à jour la liste des intervenants après la suppression
         const updatedIntervenants = await getListeNoms();
         setIntervenants(updatedIntervenants);
+        console.log(UEProcker);
         UEProckerSwitch();
+        console.log(UEProcker);
     };
 
 
