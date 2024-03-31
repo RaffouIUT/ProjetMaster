@@ -85,3 +85,25 @@ export const getSeanceById = async (id: string) => {
         }
     });
 }
+
+export const getTokenById = async (id: string) => {
+return db.cours.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            tokenQrCode: true
+        }
+    });
+}
+
+export const setTokenById = async (id: string, token: string) => {
+    await db.cours.update({
+        where: {
+            id: id
+        },
+        data: {
+            tokenQrCode: token
+        }
+    })
+}
