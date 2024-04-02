@@ -2,7 +2,7 @@
 import { redirect, RedirectType } from 'next/navigation';
 import { DOMParser } from 'xmldom';
 
-export function redirectToCas(idSeance: string, idToken: string) {
+export async function redirectToCas(idSeance: string, idToken: string) {
     redirect(`https://cas-test.univ-lemans.fr/cas/login?service=http://umbriel.univ-lemans.fr/etu/${idSeance}/${idToken}`,RedirectType.push)
 }
 
