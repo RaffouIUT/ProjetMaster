@@ -182,7 +182,7 @@ export default function Page({ params }: {
                 {/* QR CODE */}
                 <div className={"flex justify-center mt-4"}>
                     <SVG
-                        text={'http://localhost:3000/etu/'+params.id+'/'+tokenQr}
+                        text={'http://umbriel.univ-lemans.fr/etu/'+params.id+'/'+tokenQr}
                         options={{
                             errorCorrectionLevel: 'M',
                             margin: 0,
@@ -198,7 +198,7 @@ export default function Page({ params }: {
                 {
                     code ? (
                         <div className={"flex text-xl text-center justify-center"}>Code et lien pour s’inscrire :<br/>
-                            {'http://localhost:3000/etu/' + params.id + '/' + tokenQr}
+                            {'http://umbriel.univ-lemans.fr/etu/' + params.id + '/' + tokenQr}
                         </div>
                     ) : (
                         <div className={"flex text-xl text-center justify-center"}>Veuillez cliquer sur le boutton pour afficher le code</div>

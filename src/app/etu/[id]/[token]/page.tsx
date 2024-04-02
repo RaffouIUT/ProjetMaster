@@ -9,17 +9,18 @@ export default function Page({ params }: {
 }) {
     const [access, setAccess] = useState<boolean>(false);
 
+    const useParams = useSearchParams();
     useEffect(() => {
-        console.log(params.id, params.token)
         getTokenById(params.id).then((response) => {
             if(response != null) {
-                console.log(response.tokenQrCode, params.token)
                 if(response.tokenQrCode === params.token) {
                     setAccess(true);
-                    redirectToCas(params.id, params.token).then( r => {
-                        const paramticket: string = "" + useSearchParams().get("ticket")
-                        validateTicket(params.id, params.token, paramticket).then(r => console.log(r));
-                    });
+                    const paramTicket = useParams.get("ticket");
+                    if (paramTicket == "" || paramTicket == null) {
+                        redirectToCas(params.id, params.token)
+                    } else {
+                        validateTicket(params.id, params.token, paramTicket);
+                    };
                 }
             }
         });
@@ -27,14 +28,14 @@ export default function Page({ params }: {
 
 
     return (
-      <div>
-      {
-          access ? (
-              <p>Accès accordé</p>
-            ) : (
-              <p>Accès refusé</p>
-          )
-      }
-      </div>
+        <div>
+            {
+                access ? (
+                    <p>Accès accordé</p>
+                ) : (
+                    <p>Accès refusé</p>
+                )
+            }
+        </div>
     );
 }

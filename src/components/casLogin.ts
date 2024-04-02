@@ -1,7 +1,8 @@
 'use server'
 import {redirect, RedirectType, useSearchParams} from "next/navigation";
 
-export async function redirectToCas(idToken: string, idSeance: string) {
+
+export async function redirectToCas(idSeance: string, idToken: string) {
 
 
     redirect(`https://cas-test.univ-lemans.fr/cas/login?service=http://umbriel.univ-lemans.fr/etu/${idSeance}/${idToken}`,RedirectType.push)
@@ -21,15 +22,17 @@ export async function redirectToCas(idToken: string, idSeance: string) {
     // ticket donné par l'url
 
 
+
     //return res2.json();
     return "";
 }
 
 export async function validateTicket(idToken: string, idSeance: string, ticket: string) {
-
-    const res2 = await fetch(`https://cas-test.univ-lemans.fr/cas/serviceValidate?ticket=${ticket}&service=http://umbriel.univ-lemans.fr/etu/${idSeance}/${idToken}`, {
+    let res2 = await fetch(`https://cas-test.univ-lemans.fr/cas/serviceValidate?ticket=${ticket}&service=http://umbriel.univ-lemans.fr/etu/${idSeance}/${idToken}`, {
         method: "GET",
-    })
+    });
 
+    res2 = JSON.parse(JSON.stringify(res2))
+    console.log(res2)
     return res2
 }

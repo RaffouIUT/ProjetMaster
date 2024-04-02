@@ -6,7 +6,7 @@ import { rechercherInter } from '@/components/utils/interUtils';
 export default async function Session() {
   let liste: JSX.Element[] = [];
   /*TODO donner l'id de l'intervenant connecté en param_id*/
-  let param_id = 'truc';
+  let param_id = 'clufqzjyg0000fenckivgu4vo';
   const cours = await db.cours.findMany({
     where: {
       intervenantId : param_id,
