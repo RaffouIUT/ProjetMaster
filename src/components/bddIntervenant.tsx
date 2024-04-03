@@ -1,7 +1,7 @@
 'use server';
 
 import db from "@/modules/db";
-import { revalidatePath } from "next/cache";
+import {revalidatePath} from "next/cache";
 import nodemailer from 'nodemailer';
 
 
@@ -37,6 +37,20 @@ export const getListeNoms = async (): Promise<string[]> => {
     const intervenants = await db.intervenant.findMany();
     return intervenants.map((intervenant) => intervenant.login);
 };
+
+export const getMDP = async (nomIntervenant: string): Promise<string> => {
+    const intervenant = await db.intervenant.findFirst({
+        where: {
+            login: nomIntervenant,
+        },
+    });
+    if(intervenant!=null){
+        return intervenant.password;
+    }else{
+        console.error('Erreur lors de l\'envoi du mot de passe dans l\'e-mail:');
+        return "";
+    }
+}
 
 type IntervenantWhereInput = {
     login: string;

@@ -1,6 +1,6 @@
 'use client'
 import styles from '../app/styles/AjouterInterBlock.module.css';
-import {AjoutInterBDD, getListeNoms, sendEmail} from "@/components/bddIntervenant";
+import {AjoutInterBDD, getListeNoms, getMDP, sendEmail} from "@/components/bddIntervenant";
 import React, { useState } from 'react';
 import {ListeNomsPage, UEProcker, UEProckerSwitch} from "@/components/AffIntervenants";
 
@@ -11,11 +11,12 @@ const AjouterInterBlock = () => {
     const [mail, setMail] = useState("");
 
     const handleSendEmail = async (nom, prenom, email) => {
+        const mdp = await getMDP(nom+"."+prenom);
         try {
             await sendEmail({
                 to: email,
                 subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
-                text: 'Bonjour '+ nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans'
+                text: 'Bonjour '+ nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans\nVotre login de session est '+ nom + '.' + prenom +'.\nVoici votre mot passe : '+mdp+'.'
             });
             console.log('E-mail envoyé avec succès');
         } catch (error) {
