@@ -1,70 +1,69 @@
 'use client';
 import AjouterInterBlock from '@/components/AjouterInterBlock';
 import React, { useEffect, useState } from 'react';
-import styles from '@/app/styles/SideBlockPage.module.css';
-import Link from 'next/link';
-import SupprInterBlock from '@/components/SupprInterBlock';
 import { InterReduit } from '@/components/utils/customTypes';
-import { getAllInter } from '@/components/utils/interUtils';
+import { deleteInter, getAllInter } from '@/components/utils/interUtils';
+import { Button, Table } from 'reactstrap';
+import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
+import NavBarAdmin from '@/components/navBarAdmin';
 
 
 export default function Page() {
 
-    const [isAjouterIntervenant, setIsAjouterIntervenant] = useState(true);
-
-    const toggleVisibilityAjouter = () => {
-        setIsAjouterIntervenant(!isAjouterIntervenant);
-        setIsSupprIntervenant(false);
-    }
-
-    useEffect(() => {
-        getAllInter().then((inters) => setIntervenants(inters));
-    }, []);
-
     const [intervenants, setIntervenants] = useState<InterReduit[]>([]);
 
-    const [isSupprIntervenant, setIsSupprIntervenant] = useState(false);
+    const [actualizeInters, setActualizeInters] = useState<boolean>(true);
 
-    const toggleVisibilitySupprimer = () => {
-        setIsAjouterIntervenant(false);
-        setIsSupprIntervenant(!isSupprIntervenant);
-    }
+    useEffect(() => {
+        if (actualizeInters) {
+            getAllInter().then((inters) => setIntervenants(inters));
+            setActualizeInters(false)
+        }
+    }, [actualizeInters]);
+
+    const supprimerInter = async (e:  React.MouseEvent<HTMLButtonElement>) => {
+        // @ts-ignore
+        const idInter = e.target.parentElement.parentElement.id
+        deleteInter(idInter).then(() => {
+            notifySuccess("L'intervenant a bien été supprimé.")
+            setActualizeInters(true)
+        }).catch(() => notifyFailure("Erreur lors de la suppression BD de l'intervenant. \n Vérifiez qu'il n'a plus de cours associé."));
+    };
 
     return (
         <section className="flex flex-column min-h-screen">
-            <div className={styles.root}>
-                <div className={styles.LeftSideBlock}>
-                <div className={styles.content}>
-                    <button className={styles.button} onClick={toggleVisibilityAjouter} type="button">Ajouter un
-                        intervenant
-                    </button>
-                    <button className={styles.button} onClick={toggleVisibilitySupprimer}
-                            type="button">Supprimer un intervenant
-                    </button>
-                    <Link href={'http://localhost:3000/admin/presence'}>
-                        <button className={styles.button} type="button">Gérer les données de présence</button>
-                    </Link>
-                    <Link href={'http://localhost:3000/admin/seance'}>
-                        <button className={styles.button} type="button">Gérer les séances</button>
-                    </Link>
-                    <button className={styles.button} type={'button'}>Déconnexion</button>
-                </div>
-                </div>
-                <div className={styles.RightSideBlock}>
-                    <div className={styles.content}>
-                        <h1>Liste des intervenants</h1>
-                        {intervenants.map((inter) => (
-                            <li key={inter.id}>{inter.nom} {inter.prenom}</li>
-                        ))}
-                    </div>
-                </div>
-                <div>
-                    {isAjouterIntervenant && <AjouterInterBlock />}
-                </div>
-                <div>
-                    {isSupprIntervenant && <SupprInterBlock intervenants={intervenants} />}
-                </div>
-            </div>
+            <NavBarAdmin />
+            <section className={"p-4"}>
+                <AjouterInterBlock setActualize={setActualizeInters}/>
+                <section>
+                    <h3>Liste des intervenants</h3>
+                    <Table id={"tab-intervenants"}>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prenom</th>
+                                <th>Login</th>
+                                <th>Adresse mail</th>
+                                <th>Supprimer l'intervenant</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {intervenants.map((inter) => (
+                                <tr id={inter.id} key={inter.id} className={"align-middle"}>
+                                    <td>{inter.nom}</td>
+                                    <td>{inter.prenom}</td>
+                                    <td>{inter.login}</td>
+                                    <td>{inter.mail}</td>
+                                    <td>
+                                        <Button onClick={supprimerInter} size={"sm"} color={"danger"} >Supprimer</Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </section>
+            </section>
         </section>
-    );
+)
+    ;
 };

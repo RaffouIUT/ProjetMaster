@@ -1,11 +1,15 @@
 'use client';
-import styles from '../app/styles/AjouterInterBlock.module.css';
 import React, { useState } from 'react';
-import { ajoutInter, sendEmailToInter } from '@/components/utils/interUtils';
+import { ajoutInter } from '@/components/utils/interUtils';
 import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import { ToastContainer } from 'react-toastify';
+import { Button, Input, Label } from 'reactstrap';
 
-const AjouterInterBlock = () => {
+interface params {
+    setActualize: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const AjouterInterBlock = ({ setActualize }: params) => {
     const [nom, setNom] = useState<string>("");
     const [prenom, setPrenom] = useState<string>("");
     const [mail, setMail] = useState<string>("");
@@ -36,57 +40,37 @@ const AjouterInterBlock = () => {
         setNom("");
         setPrenom("");
         setMail("");
+        setActualize(true);
     };
 
     return (
-        <div className={styles.MiddleSideBlock}>
+        <section className={"mb-4"}>
             <ToastContainer />
-            <div className={styles.element}>
-                <div>
-                    Nom de l'intervenant
+            <h3>Ajouter un Intervenant</h3>
+            <div className={"flex flex-row"}>
+                <div className={"flex flex-column mr-4"}>
+                    <Label for={'nomInput'}>Nom de l'intervenant</Label>
+                    <Input type="text" id="nomInput" name="nomInput" value={nom}
+                           onChange={(e) => setNom(e.target.value)}
+                           placeholder={"Laurent"}/>
                 </div>
-                <div className={styles.bar}>
-                    {/* Update the input value and onChange */}
-                    <input
-                        type="text"
-                        id="nomInput"
-                        name="nomInput"
-                        value={nom}
-                        onChange={(e) => setNom(e.target.value)}
-                    />
+                <div className={"flex flex-column mr-4"}>
+                    <Label for={'prenomInput'}>Prénom de l'intervenant</Label>
+                    <Input type="text" id={"prenomInput"} name="prenomInput" value={prenom}
+                           onChange={(e) => setPrenom(e.target.value)}
+                           placeholder={"Antoine"}/>
                 </div>
-                <div>
-                    Prénom de l'intervenant
+                <div className={"flex flex-column mr-4"}>
+                    <Label for={'mailInput'}>Adresse Mail de l'intervenant</Label>
+                    <Input type="text" id={'mailInput'} name="mailInput" value={mail}
+                           onChange={(e) => setMail(e.target.value)}
+                           placeholder={"antoine.laurent2@mail.com"}/>
                 </div>
-                <div className={styles.bar}>
-                    {/* Update the input value and onChange */}
-                    <input
-                        type="text"
-                        id="prenomInput"
-                        name="prenomInput"
-                        value={prenom}
-                        onChange={(e) => setPrenom(e.target.value)}
-                    />
-                </div>
-                <div>
-                    Mail de l'intervenant
-                </div>
-                <div className={styles.bar}>
-                    {/* Update the input value and onChange */}
-                    <input
-                        type="text"
-                        id="mailInput"
-                        name="mailInput"
-                        value={mail}
-                        onChange={(e) => setMail(e.target.value)}
-                    />
-                </div>
-                <div className={styles.button}>
-                    {/* Remove the () after AjoutInterBDD */}
-                    <button onClick={handleValiderClick} type="button">Valider</button>
+                <div className={"align-content-end"}>
+                    <Button color={"primary"} onClick={handleValiderClick} type="button">Ajouter</Button>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 

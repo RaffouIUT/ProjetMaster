@@ -5,3 +5,10 @@
 .fc-event, .fc-daygrid-day-frame {
     cursor: pointer!important;
 }
+.fc-addSeance-button {
+    background-color: #669bbc !important;
+    border-color: #5e93b4 !important;
+}
+.fc-addSeance-button:hover {
+    background-color: #5b849d !important;
+}

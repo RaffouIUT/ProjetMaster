@@ -8,6 +8,7 @@ import { PresenceEtuCours } from '@/components/utils/customTypes';
 import { getAllCoursByPromoId } from '@/components/utils/coursUtils';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import NavBarAdmin from '@/components/navBarAdmin';
 
 export default function Page() {
 
@@ -107,45 +108,49 @@ export default function Page() {
 
     return (
         /* section gestion des séances du module administrateur */
-        <section className={"flex flex-column min-h-screen p-3"}>
-            <section className={"flex flex-row items-center"}>
-                <div className={"basis-1/5 flex flex-row items-center"}>
-                    <Label for={"promo"} className={"required my-0 mr-2"}>Promotion </Label>
-                    <Input id={"promo"} name={"promo_cours"} type={"select"} defaultValue={selectedPromoId} onChange={handlePromo} required>
-                        {promos.map((promo) => (
-                            <option value={promo.id} key={promo.id}>{promo.nom}</option>
+        <section className={"flex flex-column min-h-screen"}>
+            <NavBarAdmin presence={false}/>
+            <section className={"p-4"}>
+                <section className={"flex flex-row items-center"}>
+                    <div className={"basis-1/5 flex flex-row items-center"}>
+                        <Label for={"promo"} className={"my-0 mr-2"}>Promotion </Label>
+                        <Input id={"promo"} name={"promo_cours"} type={"select"} onChange={handlePromo} required>
+                            <option disabled selected={true} value={""}>Sélectionner une promo</option>
+                            {promos.map((promo) => (
+                                <option value={promo.id} key={promo.id}>{promo.nom}</option>
+                            ))}
+                        </Input>
+                    </div>
+                    <div className={"basis-1/5 mx-3"}>
+                        <Button color={"primary"} className={"mr-4"} onClick={exportToPdf}>Exporter en PDF</Button>
+                        <Button color={"primary"} onClick={exportToCsv}>Exporter en CSV</Button>
+                    </div>
+                </section>
+                <hr/>
+                <section>
+                    <Table id={"tab-activite"}>
+                        <thead>
+                            <tr>
+                                <th>Cours</th>
+                                {cours.map((cours) => (
+                                    <th className={"text-center"} key={cours.id}>{cours.dateDebut.toLocaleDateString("fr-FR")}</th>
+                                ))}
+                                <th className={"text-center"}>Total présence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {inscriptions.map((inscription) => (
+                            <tr key={inscription.etudiant.id}>
+                                <th scope={"row"}>{inscription.etudiant.nom} {inscription.etudiant.prenom}</th>
+                                {inscription.cours.map((presenceCours) => (
+                                    <td className={"text-center"} key={presenceCours.cours.id + "-" + inscription.etudiant.id}>{presenceCours.present ? "présent" : "absent"}</td>
+                                ))}
+                                <td className={"text-center"}>{inscription.total} / {cours.length}</td>
+                            </tr>
                         ))}
-                    </Input>
-                </div>
-                <div className={"basis-1/5 mx-3"}>
-                    <Button color={"primary"} className={"mr-4"} onClick={exportToPdf}>Exporter en PDF</Button>
-                    <Button color={"primary"} onClick={exportToCsv}>Exporter en CSV</Button>
-                </div>
-            </section>
-            <hr/>
-            <section>
-                <Table id={"tab-activite"}>
-                    <thead>
-                        <tr>
-                            <th>Cours</th>
-                            {cours.map((cours) => (
-                                <th className={"text-center"} key={cours.id}>{cours.dateDebut.toLocaleDateString("fr-FR")}</th>
-                            ))}
-                            <th className={"text-center"}>Total présence</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {inscriptions.map((inscription) => (
-                        <tr key={inscription.etudiant.id}>
-                            <th scope={"row"}>{inscription.etudiant.nom} {inscription.etudiant.prenom}</th>
-                            {inscription.cours.map((presenceCours) => (
-                                <td className={"text-center"} key={presenceCours.cours.id + "-" + inscription.etudiant.id}>{presenceCours.present ? "présent" : "absent"}</td>
-                            ))}
-                            <td className={"text-center"}>{inscription.total} / {cours.length}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </Table>
+                        </tbody>
+                    </Table>
+                </section>
             </section>
         </section>
     );
