@@ -14,11 +14,20 @@ export const generateInterListe = async () => {
     revalidatePath('/');
 };
 
+const generateMdp = ():string => {
+    let mdp:string = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < 8; i++)
+        mdp+= possible.charAt(Math.floor(Math.random() * possible.length));
+    return mdp;
+}
+
 
 export const AjoutInterBDD = async (nom: string, prenom: string, mail:string) => {
+    const mdp = generateMdp();
     await db.intervenant.createMany({
         data: [
-            { nom, prenom, mail: mail, login: `${nom}.${prenom}`, password: "test" },
+            { nom, prenom, mail: mail, login: `${nom}.${prenom}`, password: mdp },
         ],
     });
     revalidatePath('/');
@@ -75,14 +84,14 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: 'leo.notelet@gmail.com',
-            pass: 'wldp qqdo zqoy juac'
+            user: 'presence.gestion.lemans@gmail.com',
+            pass: 'mgun enzv huoy ktvw'
         }
     });
 
     // Définissez les options de l'e-mail
     let mailOptions = {
-        from: 'leo.notelet@gmail.com',
+        from: 'presence.gestion.lemans@gmail.com',
         to: options.to,
         subject: options.subject,
         text: options.text
@@ -94,7 +103,6 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
         console.log('E-mail envoyé avec succès');
     } catch (error) {
         console.error('Erreur lors de l\'envoi de l\'e-mail:', error);
-        throw new Error('Une erreur s\'est produite lors de l\'envoi de l\'e-mail');
     }
 }
 

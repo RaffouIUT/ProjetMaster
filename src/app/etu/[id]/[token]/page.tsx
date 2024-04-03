@@ -20,7 +20,7 @@ export default function Page({ params }: {
                         redirectToCas(params.id, params.token)
                     } else {
                         validateTicket(params.id, params.token, paramTicket);
-                    };
+                    }
                 }
             }
         });

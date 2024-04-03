@@ -44,11 +44,14 @@ const AjouterInterBlock = () => {
 
         // Ajout dans la base de données
         await AjoutInterBDD(nom, prenom, mail);
-        await handleSendEmail(nom, prenom, mail);
+        const n = nom;
+        const pn = prenom;
+        const m = mail;
         setNom("");
         setPrenom("");
         setMail("");
         UEProckerSwitch();
+        await handleSendEmail(n, pn, m);
     };
 
     return (
