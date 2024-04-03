@@ -66,22 +66,22 @@ export const getInscriptionsByPromoId = async (id: string) => {
   etudiants.forEach((etu) => {
     presencesListeTmp.push({
       etudiant: etu,
-      cours: structuredClone(presenceCoursListe)
+      cours: structuredClone(presenceCoursListe),
+      total: 0
     })
   })
 
   presencesListeTmp.map((etuPresent) => {
+    let cpt: number = 0
     etuPresent.cours.map((pres) => {
-      // if (isInscrit(pres.cours.id, etuPresent.etudiant.id)) {
-      //     console.log("machin")
-      //     pres.present = true
-      // }
       response.forEach((inscription) => {
         if (inscription.cours.id == pres.cours.id && inscription.etudiant.id == etuPresent.etudiant.id) {
           pres.present = true;
+          cpt ++
         }
       })
     })
+    etuPresent.total = cpt
   })
   return presencesListeTmp
 }

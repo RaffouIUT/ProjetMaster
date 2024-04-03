@@ -51,4 +51,5 @@ export type PresenceCours = {
 export type PresenceEtuCours = {
     etudiant: Etudiant,
     cours: PresenceCours[]
+    total: number
 }
