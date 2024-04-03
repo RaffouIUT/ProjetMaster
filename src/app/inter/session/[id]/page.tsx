@@ -2,7 +2,7 @@
 import { useQRCode } from 'next-qrcode';
 import { SetStateAction, useEffect, useState } from 'react';
 import ProgressBar from '@/components/progressbar';
-import { listeEtuPresents } from '@/components/listeEtuPresents';
+import { listeEtuPresents } from '@/components/utils/etuUtils';
 import { Etudiant } from '@/components/utils/customTypes';
 import { getListeEtuByIdNotInList } from '@/components/utils/etuUtils';
 import { addInscription } from '@/components/utils/inscriptionsUtils';

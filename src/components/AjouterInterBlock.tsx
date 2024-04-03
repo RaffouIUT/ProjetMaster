@@ -1,29 +1,14 @@
-'use client'
+'use client';
 import styles from '../app/styles/AjouterInterBlock.module.css';
-import {AjoutInterBDD, getListeNoms, getMDP, sendEmail} from "@/components/bddIntervenant";
 import React, { useState } from 'react';
-import {ListeNomsPage, UEProcker, UEProckerSwitch} from "@/components/AffIntervenants";
+import { ajoutInter, sendEmailToInter } from '@/components/utils/interUtils';
+import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
+import { ToastContainer } from 'react-toastify';
 
 const AjouterInterBlock = () => {
-    const inter = "l'intervenant";
-    const [nom, setNom] = useState("");
-    const [prenom, setPrenom] = useState("");
-    const [mail, setMail] = useState("");
-
-    const handleSendEmail = async (nom, prenom, email) => {
-        const mdp = await getMDP(nom+"."+prenom);
-        try {
-            await sendEmail({
-                to: email,
-                subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
-                text: 'Bonjour '+ nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans\nVotre login de session est '+ nom + '.' + prenom +'.\nVoici votre mot passe : '+mdp+'.'
-            });
-            console.log('E-mail envoyé avec succès');
-        } catch (error) {
-            alert('Une erreur s\'est produite lors de l\'envoi de l\'e-mail');
-        }
-    };
-
+    const [nom, setNom] = useState<string>("");
+    const [prenom, setPrenom] = useState<string>("");
+    const [mail, setMail] = useState<string>("");
 
     const handleValiderClick = async () => {
         // Vérification du format du nom et du prénom
@@ -31,7 +16,7 @@ const AjouterInterBlock = () => {
         const prenomRegex = /^[A-Z][a-z]*$/;
 
         if (!nom.match(nomRegex) || !prenom.match(prenomRegex)) {
-            alert("Le nom et le prénom doivent commencer par une majuscule suivie de minuscules sans chiffre.");
+            alert("Le nom et le prénom doivent commencer par une majuscule suivi de minuscules sans chiffre.");
             return;
         }
 
@@ -44,22 +29,21 @@ const AjouterInterBlock = () => {
         }
 
         // Ajout dans la base de données
-        await AjoutInterBDD(nom, prenom, mail);
-        const n = nom;
-        const pn = prenom;
-        const m = mail;
+        ajoutInter(nom, prenom, mail).then(() => {
+            notifySuccess(`L'intervenant ${nom} ${prenom} a bien été ajouté. Un mail lui a été envoyé.`)
+        }).catch(() => notifyFailure("Erreur lors de l'insertion BD de l'intervenant"));
+
         setNom("");
         setPrenom("");
         setMail("");
-        UEProckerSwitch();
-        await handleSendEmail(n, pn, m);
     };
 
     return (
         <div className={styles.MiddleSideBlock}>
+            <ToastContainer />
             <div className={styles.element}>
                 <div>
-                    Nom de {inter}
+                    Nom de l'intervenant
                 </div>
                 <div className={styles.bar}>
                     {/* Update the input value and onChange */}
@@ -72,7 +56,7 @@ const AjouterInterBlock = () => {
                     />
                 </div>
                 <div>
-                    Prénom de {inter}
+                    Prénom de l'intervenant
                 </div>
                 <div className={styles.bar}>
                     {/* Update the input value and onChange */}
@@ -85,7 +69,7 @@ const AjouterInterBlock = () => {
                     />
                 </div>
                 <div>
-                    Mail de {inter}
+                    Mail de l'intervenant
                 </div>
                 <div className={styles.bar}>
                     {/* Update the input value and onChange */}

@@ -13,10 +13,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { FormCours, FormCoursVide, InterReduit } from '@/components/utils/customTypes';
 import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/utils/coursUtils';
 import { getAllInter } from '@/components/utils/interUtils';
+import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import '@/components/custom.css';
 
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { Promotion } from '@prisma/client';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 
@@ -35,10 +34,6 @@ export default function CalendarCustom()  {
     const [promos, setPromos] = useState<Promotion[]>([]);
 
     const [actualize, setActualize] = useState(true);
-
-    const notifySuccess = (message: string) => toast.success(message);
-
-    const notifyFailure = (message: string) => toast.error(message)
 
     const toggle = () => setModal(!modal);
 

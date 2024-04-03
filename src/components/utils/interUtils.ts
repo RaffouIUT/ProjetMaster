@@ -1,6 +1,7 @@
 'use server';
 import db from '@/modules/db';
-import { InterReduit } from '@/components/utils/customTypes';
+import { EmailOptions, InterReduit } from '@/components/utils/customTypes';
+import nodemailer from 'nodemailer';
 
 export const getAllInter = async () => {
 	const liste: InterReduit[] = [];
@@ -30,4 +31,62 @@ export async function rechercherInter(id_inter: string) {
 			id: id_inter,
 		},
 	});
+}
+
+export const deleteInter = async (idIntervenant: string) => {
+	await db.intervenant.delete({
+		where: {
+			id: idIntervenant
+		},
+	});
+}
+
+const generateMdp = ():string => {
+	let mdp:string = "";
+	let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	for (let i = 0; i < 8; i++)
+		mdp+= possible.charAt(Math.floor(Math.random() * possible.length));
+	return mdp;
+}
+
+export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
+	const mdp = generateMdp();
+
+	await db.intervenant.create({
+		data: {
+			nom: nom,
+			prenom: prenom,
+			mail: mail,
+			login: `${nom}.${prenom}`,
+			password: mdp
+		}
+	});
+
+	await sendEmailToInter({
+		to: mail,
+		subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
+		text: 'Bonjour ' + nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans\nVotre login de session est ' + nom + '.' + prenom + '\nVoici votre mot passe : ' + mdp + '.'
+	});
+}
+
+export const sendEmailToInter = async (options: EmailOptions): Promise<void> => {
+	// Créez un transporteur SMTP réutilisable
+	let transporter = nodemailer.createTransport({
+		service: 'gmail',
+		auth: {
+			user: 'presence.gestion.lemans@gmail.com',
+			pass: 'mgun enzv huoy ktvw'
+		}
+	});
+
+	// Définissez les options de l'e-mail
+	let mailOptions = {
+		from: 'presence.gestion.lemans@gmail.com',
+		to: options.to,
+		subject: options.subject,
+		text: options.text
+	};
+
+	// Envoyez l'e-mail
+	await transporter.sendMail(mailOptions);
 }

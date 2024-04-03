@@ -53,3 +53,9 @@ export type PresenceEtuCours = {
     cours: PresenceCours[]
     total: number
 }
+
+export type EmailOptions = {
+    to: string;
+    subject: string;
+    text: string;
+}
