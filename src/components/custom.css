@@ -12,3 +12,10 @@
 .fc-addSeance-button:hover {
     background-color: #5b849d !important;
 }
+.fc-deleteAllSeances-button {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+.fc-deleteAllSeances-button:hover {
+    background-color: #bb2d3b !important;
+}

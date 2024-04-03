@@ -2,6 +2,7 @@
 import db from '@/modules/db';
 import { EventInput } from '@fullcalendar/core';
 import { FormCours } from '@/components/utils/customTypes';
+import { deleteAllInscriptions } from '@/components/utils/inscriptionsUtils';
 
 export const getSeances = async () => {
     const liste: EventInput[] = [];
@@ -114,4 +115,11 @@ export const setTokenById = async (id: string, token: string) => {
             tokenQrCode: token
         }
     })
+}
+
+export const deleteAllSeances = async () => {
+    // On doit d'abord supprimer toutes les inscriptions associées aux cours
+    await deleteAllInscriptions();
+
+    await db.cours.deleteMany({});
 }

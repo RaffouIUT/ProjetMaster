@@ -15,7 +15,7 @@ import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHead
 
 import NavBarAdmin from '@/components/navBarAdmin';
 import { FormCours, FormCoursVide, InterReduit } from '@/components/utils/customTypes';
-import { addSeance, deleteSeance, getSeances, updateSeance } from '@/components/utils/coursUtils';
+import { addSeance, deleteSeance, getSeances, updateSeance, deleteAllSeances } from '@/components/utils/coursUtils';
 import { getAllInter } from '@/components/utils/interUtils';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 import { Promotion } from '@prisma/client';
@@ -192,6 +192,15 @@ export default function Page()  {
         }
     }
 
+    const handleDeleteAllSeances = () => {
+        if (confirm("Etes-vous sûr de supprimer TOUS les cours enregistrés ? \nCela supprimera également toutes les inscriptions associées à ces cours. \nATTENTION cette action est irréversible !")) {
+            deleteAllSeances().then(() => {
+                setActualize(true);
+                notifySuccess("Tous les cours et inscriptions associées ont bien été supprimés.")
+            }).catch(() => notifyFailure("Erreur lors de la suppression des cours."))
+        }
+    }
+
     const Form_cours = () => {
         return (
             <>
@@ -291,7 +300,7 @@ export default function Page()  {
                     timeZone={'UTC'}
                     plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
                     headerToolbar={{
-                        left: 'prev,next today addSeance',
+                        left: 'prev,next today addSeance deleteAllSeances',
                         center: 'title',
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     }}
@@ -313,9 +322,11 @@ export default function Page()  {
                     customButtons={{
                         addSeance: {
                             text: "Ajouter un cours",
-                            click: function () {
-                                handleDateSelect(null)
-                            }
+                            click: () => handleDateSelect(null)
+                        },
+                        deleteAllSeances: {
+                            text: "Supprimer tous les cours",
+                            click: () => handleDeleteAllSeances()
                         }
                     }}
                     height="auto"

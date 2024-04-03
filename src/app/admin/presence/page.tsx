@@ -114,8 +114,8 @@ export default function Page() {
                 <section className={"flex flex-row items-center"}>
                     <div className={"basis-1/5 flex flex-row items-center"}>
                         <Label for={"promo"} className={"my-0 mr-2"}>Promotion </Label>
-                        <Input id={"promo"} name={"promo_cours"} type={"select"} onChange={handlePromo} required>
-                            <option disabled selected={true} value={""}>Sélectionner une promo</option>
+                        <Input id={"promo"} name={"promo_cours"} type={"select"} onChange={handlePromo} defaultValue={""} required>
+                            <option disabled value={""}>Sélectionner une promo</option>
                             {promos.map((promo) => (
                                 <option value={promo.id} key={promo.id}>{promo.nom}</option>
                             ))}

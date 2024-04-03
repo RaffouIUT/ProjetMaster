@@ -86,3 +86,7 @@ export const getInscriptionsByPromoId = async (id: string) => {
   return presencesListeTmp
 }
 
+export const deleteAllInscriptions = async () => {
+  await db.inscription.deleteMany({})
+}
+
