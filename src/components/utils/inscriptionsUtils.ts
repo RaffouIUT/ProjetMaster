@@ -9,11 +9,14 @@ export const getInsciptionBySessionId = async (id_session:string) => {
   return db.inscription.findMany({
     where: {
       coursId: id_session,
+    },
+    include: {
+      etudiant: true
     }
   });
 };
 
-export const addInscription = async (id_session:string, id_etu:string) => {
+export const addInscription = async (id_session:string, id_etu:string, ponctualite: string) => {
   let etu = await getEtuById(id_etu);
   let seance = await getSeanceById(id_session);
 
@@ -22,6 +25,7 @@ export const addInscription = async (id_session:string, id_etu:string) => {
       data: {
         etudiantId: id_etu,
         coursId: id_session,
+        ponctualite: ponctualite
       }
     }).then(() => { // @ts-ignore impossible qu'ils soient null
       console.log("Inscription ajoutée de l'étudiant " + etu.nom + " " + etu.prenom + " au cours " + seance.nom)});
@@ -40,6 +44,7 @@ export const getInscriptionsByPromoId = async (id: string) => {
     select: {
       etudiant: true,
       cours: true,
+      ponctualite: true
     },
     orderBy: {
       cours: {
@@ -55,7 +60,7 @@ export const getInscriptionsByPromoId = async (id: string) => {
   cours.forEach((c) => {
     presenceCoursListe.push({
       cours: c,
-      present: false
+      present: "absent"
     })
   });
 
@@ -76,7 +81,7 @@ export const getInscriptionsByPromoId = async (id: string) => {
     etuPresent.cours.map((pres) => {
       response.forEach((inscription) => {
         if (inscription.cours.id == pres.cours.id && inscription.etudiant.id == etuPresent.etudiant.id) {
-          pres.present = true;
+          pres.present = inscription.ponctualite;
           cpt ++
         }
       })
@@ -88,5 +93,35 @@ export const getInscriptionsByPromoId = async (id: string) => {
 
 export const deleteAllInscriptions = async () => {
   await db.inscription.deleteMany({})
+}
+
+export const deleteInscription = async (coursId: string, etuId: string) => {
+  await db.inscription.delete({
+    where: {
+      coursId_etudiantId: {
+        coursId: coursId,
+        etudiantId: etuId
+      }
+    }
+  })
+}
+
+export const addOrUpdateInscription = async (coursId: string, etuId: string, ponctualite: string) => {
+  await db.inscription.upsert({
+    where: {
+      coursId_etudiantId: {
+        coursId: coursId,
+        etudiantId: etuId
+      }
+    },
+    update: {
+      ponctualite: ponctualite
+    },
+    create: {
+      coursId: coursId,
+      etudiantId: etuId,
+      ponctualite: ponctualite
+    }
+  })
 }
 

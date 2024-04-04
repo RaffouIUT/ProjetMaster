@@ -177,40 +177,40 @@ const insertCours = async (promos: any, inters: any) => {
 
 const insertEtu = async (promos: any) => {
 	const etu1 = await prisma.etudiant.upsert({
-		where: { id: "clubnnqhl000090lmqf91h8bv" },
+		where: { id: "s200718" },
 		update: {},
 		create: {
-			id: "clubnnqhl000090lmqf91h8bv",
+			id: "s200718",
 			nom: "Guimbert",
 			prenom: "Alexis",
 			promotionId: promos.m1.id,
 		}
 	})
 	const etu2 = await prisma.etudiant.upsert({
-		where: { id: "clubnnqhr000190lmdxuj1c6i" },
+		where: { id: "s2301453" },
 		update: {},
 		create: {
-			id: "clubnnqhr000190lmdxuj1c6i",
+			id: "s2301453",
 			nom: "Giraud",
 			prenom: "Nicolas",
 			promotionId: promos.m1.id
 		}
 	})
 	const etu3 = await prisma.etudiant.upsert({
-		where: { id: "clubnnqhs000290lmvgjglhwv" },
+		where: { id: "i182554" },
 		update: {},
 		create: {
-			id: "clubnnqhs000290lmvgjglhwv",
+			id: "i182554",
 			nom: "Donneau",
 			prenom: "Raphael",
 			promotionId: promos.m1.id
 		}
 	})
 	const etu4 = await prisma.etudiant.upsert({
-		where: { id: "clubnnqhs000390lmbnzquucs" },
+		where: { id: "s203404" },
 		update: {},
 		create: {
-			id: "clubnnqhs000390lmbnzquucs",
+			id: "s203404",
 			nom: "Notelet",
 			prenom: "Leo",
 			promotionId: promos.m1.id
@@ -222,18 +222,18 @@ const insertEtu = async (promos: any) => {
 const insertInscriptions = async(etus: any, cours: any) => {
 	await prisma.inscription.createMany({
 		data: [
-			{ coursId: cours.c1.id, etudiantId: etus.e1.id },
-			{ coursId: cours.c1.id, etudiantId: etus.e2.id },
-			{ coursId: cours.c1.id, etudiantId: etus.e3.id },
-			{ coursId: cours.c2.id, etudiantId: etus.e1.id },
-			{ coursId: cours.c2.id, etudiantId: etus.e2.id },
-			{ coursId: cours.c3.id, etudiantId: etus.e2.id },
-			{ coursId: cours.c3.id, etudiantId: etus.e3.id },
-			{ coursId: cours.c3.id, etudiantId: etus.e4.id },
-			{ coursId: cours.c4.id, etudiantId: etus.e1.id },
-			{ coursId: cours.c4.id, etudiantId: etus.e2.id },
-			{ coursId: cours.c4.id, etudiantId: etus.e3.id },
-			{ coursId: cours.c4.id, etudiantId: etus.e4.id }
+			{ coursId: cours.c1.id, etudiantId: etus.e1.id, ponctualite: "retard" },
+			{ coursId: cours.c1.id, etudiantId: etus.e2.id, ponctualite: "present" },
+			{ coursId: cours.c1.id, etudiantId: etus.e3.id, ponctualite: "present" },
+			{ coursId: cours.c2.id, etudiantId: etus.e1.id, ponctualite: "retard" },
+			{ coursId: cours.c2.id, etudiantId: etus.e2.id, ponctualite: "present" },
+			{ coursId: cours.c3.id, etudiantId: etus.e2.id, ponctualite: "retard" },
+			{ coursId: cours.c3.id, etudiantId: etus.e3.id, ponctualite: "present" },
+			{ coursId: cours.c3.id, etudiantId: etus.e4.id, ponctualite: "present" },
+			{ coursId: cours.c4.id, etudiantId: etus.e1.id, ponctualite: "retard" },
+			{ coursId: cours.c4.id, etudiantId: etus.e2.id, ponctualite: "present" },
+			{ coursId: cours.c4.id, etudiantId: etus.e3.id, ponctualite: "present" },
+			{ coursId: cours.c4.id, etudiantId: etus.e4.id, ponctualite: "present" }
 		]
 	})
 }

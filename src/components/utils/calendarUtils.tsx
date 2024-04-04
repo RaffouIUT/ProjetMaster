@@ -35,6 +35,10 @@ export const checkField = (data: string, typeField: string = "text") : boolean =
             return !!(data && data.trim().length > 0 &&
                 data.trim().match(/^\d{2}:\d{2}$/));
 
+        case "idEtu":
+            return !!(data && data.trim().length > 0 &&
+                data.trim().match(/^[a-z][0-9]+$/));
+
         case "text":
         default:
             return !!(data && data.trim().length > 0);

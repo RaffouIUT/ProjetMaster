@@ -81,10 +81,11 @@ model Cours {
 }
 
 model Inscription {
-  coursId    String
-  etudiantId String
-  cours      Cours    @relation(fields: [coursId], references: [id])
-  etudiant   Etudiant @relation(fields: [etudiantId], references: [id])
+  coursId     String
+  etudiantId  String
+  cours       Cours    @relation(fields: [coursId], references: [id])
+  etudiant    Etudiant @relation(fields: [etudiantId], references: [id])
+  ponctualite String
 
   @@id([coursId, etudiantId])
   @@map("inscriptions")

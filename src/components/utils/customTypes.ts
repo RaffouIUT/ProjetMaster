@@ -1,4 +1,4 @@
-import { Cours, Promotion } from '@prisma/client';
+import { Cours, Promotion, Etudiant } from '@prisma/client';
 
 export type InterReduit = {
     id: string,
@@ -6,20 +6,6 @@ export type InterReduit = {
     prenom: string,
     mail: string,
     login: string
-}
-
-export type Etudiant = {
-    id: string,
-    nom: string,
-    prenom: string,
-}
-
-export const InterReduitVide: InterReduit = {
-    id: '', mail: '', nom: '', prenom: '', login: ''
-}
-
-export const PromotionVide: Promotion = {
-    abreviation: '', id: '', nom: ''
 }
 
 export type FormCours = {
@@ -33,20 +19,9 @@ export type FormCours = {
     heureFin: string
 }
 
-export const FormCoursVide: FormCours = {
-    id : '',
-    nom: '',
-    date: '',
-    salle: '',
-    intervenant: structuredClone(InterReduitVide),
-    promo: structuredClone(PromotionVide),
-    heureDeb: '',
-    heureFin: ''
-}
-
 export type PresenceCours = {
     cours: Cours,
-    present: boolean,
+    present: string,
 }
 export type PresenceEtuCours = {
     etudiant: Etudiant,
@@ -58,4 +33,29 @@ export type EmailOptions = {
     to: string;
     subject: string;
     text: string;
+}
+
+export const InterReduitVide: InterReduit = {
+    id: '', mail: '', nom: '', prenom: '', login: ''
+}
+
+export const PromotionVide: Promotion = {
+    abreviation: '', id: '', nom: ''
+}
+
+
+export const FormCoursVide: FormCours = {
+    id : '',
+    nom: '',
+    date: '',
+    salle: '',
+    intervenant: structuredClone(InterReduitVide),
+    promo: structuredClone(PromotionVide),
+    heureDeb: '',
+    heureFin: ''
+}
+
+export const EtudiantVide: Etudiant = {
+    id: '', nom: '', prenom: '', promotionId: ""
+
 }

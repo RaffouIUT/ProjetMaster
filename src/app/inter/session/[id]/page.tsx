@@ -2,8 +2,8 @@
 import { useQRCode } from 'next-qrcode';
 import { SetStateAction, useEffect, useState } from 'react';
 import ProgressBar from '@/components/progressbar';
-import { listeEtuPresents } from '@/components/utils/etuUtils';
-import { Etudiant } from '@/components/utils/customTypes';
+import { getEtuPresents } from '@/components/utils/etuUtils';
+import { Etudiant } from '@prisma/client';
 import { getListeEtuByIdNotInList } from '@/components/utils/etuUtils';
 import { addInscription } from '@/components/utils/inscriptionsUtils';
 import { setTokenById } from '@/components/utils/coursUtils';
@@ -40,7 +40,7 @@ export default function Page({ params }: {
         if(actualize) {
             setActualize(false);
             let listePresents: Etudiant[] = [];
-            listeEtuPresents(params.id).then((liste) => {
+            getEtuPresents(params.id).then((liste) => {
                 setListeEtu(liste);
                 listePresents = liste;
                 getListeEtuByIdNotInList(listePresents.map((etu) => etu.id)).then((listeNonPresents) => {
@@ -58,7 +58,7 @@ export default function Page({ params }: {
 
     useEffect(() => {
         if(idEtuAAjouter === undefined) return;
-        addInscription(params.id, idEtuAAjouter)
+        addInscription(params.id, idEtuAAjouter, "présent")
           .then(() => {
               setIdEtuAAjouter(undefined);
               refresh();
