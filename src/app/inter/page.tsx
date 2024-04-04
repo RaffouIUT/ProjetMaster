@@ -1,13 +1,41 @@
-import Session from "@/components/session";
+'use client';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { InterEtendu, InterEtenduVide } from '@/components/utils/customTypes';
+import { getInterById } from '@/components/utils/interUtils';
+import { ToastContainer } from 'react-toastify';
 
 export default function Page() {
 
+    const [intervenant, setIntervenant] = useState<InterEtendu>(structuredClone(InterEtenduVide));
+
+    const intervenantId: string = "clufqzjyg0000fenckivgu4vo";
+
+    useEffect(() => {
+        getInterById(intervenantId).then((inter) => {
+            setIntervenant(inter)
+        })
+    }, []);
+
     return (
-        <div className={"text-justify"}>
-            <div className={"my-8 text-6xl w-screen text-center"}>Séléction<p>conférence</p></div>
+        <section className={"p-3"}>
+            <ToastContainer />
+            <h1 className={"text-center"}>Séléction Conférence</h1>
             <div className={"grid grid-cols-3"}>
-                <Session/>
+                {intervenant.cours.map((cours => (
+                    <div key={cours.id} className={'flex bg-gray-300 rounded-lg mx-4 my-4 justify-center justify-self-center text-center w-5/6 h-5/6 text-2xl'}>
+                        <Link className={'w-full h-full hover:bg-primary-700 rounded-lg'}
+                              href={"/inter/session/" + cours.id}>
+                            <p className={"mb-0"}>{cours.nom} <br /> {intervenant.nom + ' ' + intervenant.prenom} <br /> {cours.dateDebut.toLocaleDateString("fr-FR")}
+                                <br />
+                                {cours.dateDebut.toLocaleTimeString("fr-FR", {hour: "2-digit", minute: "2-digit", timeZone: "UTC"})
+                                    + ' - ' +
+                                 cours.dateFin.toLocaleTimeString("fr-FR", {hour: "2-digit", minute: "2-digit", timeZone: "UTC"})}
+                            </p>
+                        </Link>
+                    </div>
+                )))}
             </div>
-        </div>
+        </section>
     );
 }

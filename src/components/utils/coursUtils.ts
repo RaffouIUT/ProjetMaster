@@ -4,7 +4,7 @@ import { EventInput } from '@fullcalendar/core';
 import { FormCours } from '@/components/utils/customTypes';
 import { deleteAllInscriptions } from '@/components/utils/inscriptionsUtils';
 
-export const getSeances = async () => {
+export const getCours = async () => {
     const liste: EventInput[] = [];
 
     const response = await db.cours.findMany({
@@ -41,7 +41,7 @@ export const getSeances = async () => {
     return liste
 };
 
-export const addSeance = async (data: FormCours) => {
+export const addCours = async (data: FormCours) => {
     await db.cours.create({
         data: {
             nom: data.nom,
@@ -55,7 +55,7 @@ export const addSeance = async (data: FormCours) => {
     });
 };
 
-export const updateSeance = async (data: FormCours) => {
+export const updateCours = async (data: FormCours) => {
     await db.cours.update({
         where: {
             id: data.id
@@ -71,7 +71,7 @@ export const updateSeance = async (data: FormCours) => {
     })
 };
 
-export const deleteSeance = async (id: string) => {
+export const deleteCours = async (id: string) => {
     await db.cours.delete({
         where: {
             id: id
@@ -79,7 +79,7 @@ export const deleteSeance = async (id: string) => {
     })
 };
 
-export const getSeanceById = async (id: string) => {
+export const getCoursById = async (id: string) => {
     return db.cours.findUnique({
         where: {
             id: id
@@ -96,7 +96,7 @@ export const getAllCoursByPromoId = async(promoId: string) => {
 }
 
 export const getTokenById = async (id: string) => {
-return db.cours.findUnique({
+    return db.cours.findUnique({
         where: {
             id: id
         },
@@ -117,7 +117,7 @@ export const setTokenById = async (id: string, token: string) => {
     })
 }
 
-export const deleteAllSeances = async () => {
+export const deleteAllCours = async () => {
     // On doit d'abord supprimer toutes les inscriptions associées aux cours
     await deleteAllInscriptions();
 

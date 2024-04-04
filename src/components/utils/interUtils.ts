@@ -1,6 +1,6 @@
 'use server';
 import db from '@/modules/db';
-import { EmailOptions, InterReduit } from '@/components/utils/customTypes';
+import { EmailOptions, InterEtendu, InterEtenduVide, InterReduit } from '@/components/utils/customTypes';
 import nodemailer from 'nodemailer';
 
 export const getAllInter = async () => {
@@ -89,4 +89,22 @@ export const sendEmailToInter = async (options: EmailOptions): Promise<void> => 
 
 	// Envoyez l'e-mail
 	await transporter.sendMail(mailOptions);
+}
+
+export const getInterById = async (interId: string) => {
+	const interDB: InterEtendu | null = await db.intervenant.findUnique({
+		where: {
+			id: interId
+		},
+		select: {
+			id: true,
+			nom: true,
+			prenom: true,
+			mail: true,
+			login: true,
+			password: false,
+			cours: true
+		}
+	});
+	return interDB ?? structuredClone(InterEtenduVide)
 }

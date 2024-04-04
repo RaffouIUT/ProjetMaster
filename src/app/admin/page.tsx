@@ -1,5 +1,5 @@
 'use client';
-import AjouterInterBlock from '@/components/AjouterInterBlock';
+import AddInterBlock from '@/components/addInterBlock';
 import React, { useEffect, useState } from 'react';
 import { InterReduit } from '@/components/utils/customTypes';
 import { deleteInter, getAllInter } from '@/components/utils/interUtils';
@@ -34,7 +34,7 @@ export default function Page() {
         <section className="flex flex-column min-h-screen">
             <NavBarAdmin />
             <section className={"p-4"}>
-                <AjouterInterBlock setActualize={setActualizeInters}/>
+                <AddInterBlock setActualize={setActualizeInters}/>
                 <section>
                     <h3>Liste des intervenants</h3>
                     <Table id={"tab-intervenants"}>

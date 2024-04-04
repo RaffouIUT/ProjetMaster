@@ -1,7 +1,7 @@
 'use server';
 import db from '@/modules/db';
 import { getAllEtuByPromoId, getEtuById } from '@/components/utils/etuUtils';
-import { getAllCoursByPromoId, getSeanceById } from '@/components/utils/coursUtils';
+import { getAllCoursByPromoId, getCoursById } from '@/components/utils/coursUtils';
 import { PresenceCours, PresenceEtuCours } from '@/components/utils/customTypes';
 import { Cours, Etudiant } from '@prisma/client';
 
@@ -18,7 +18,7 @@ export const getInsciptionBySessionId = async (id_session:string) => {
 
 export const addInscription = async (id_session:string, id_etu:string, ponctualite: string) => {
   let etu = await getEtuById(id_etu);
-  let seance = await getSeanceById(id_session);
+  let seance = await getCoursById(id_session);
 
   if(etu  && seance){
     await db.inscription.create({

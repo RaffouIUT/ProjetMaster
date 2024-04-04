@@ -8,6 +8,15 @@ export type InterReduit = {
     login: string
 }
 
+export type InterEtendu = {
+    id: string,
+    nom: string,
+    prenom: string,
+    mail: string,
+    login: string,
+    cours: Cours[]
+}
+
 export type FormCours = {
     id: string,
     nom: string,
@@ -39,10 +48,18 @@ export const InterReduitVide: InterReduit = {
     id: '', mail: '', nom: '', prenom: '', login: ''
 }
 
+export const InterEtenduVide: InterEtendu = {
+    id: "",
+    nom: "",
+    prenom: "",
+    mail: "",
+    login: "",
+    cours: []
+}
+
 export const PromotionVide: Promotion = {
     abreviation: '', id: '', nom: ''
 }
-
 
 export const FormCoursVide: FormCours = {
     id : '',
@@ -57,5 +74,4 @@ export const FormCoursVide: FormCours = {
 
 export const EtudiantVide: Etudiant = {
     id: '', nom: '', prenom: '', promotionId: ""
-
 }

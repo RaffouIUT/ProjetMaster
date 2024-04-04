@@ -15,7 +15,7 @@ import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHead
 
 import NavBarAdmin from '@/components/navBarAdmin';
 import { FormCours, FormCoursVide, InterReduit } from '@/components/utils/customTypes';
-import { addSeance, deleteSeance, getSeances, updateSeance, deleteAllSeances } from '@/components/utils/coursUtils';
+import { addCours, deleteCours, getCours, updateCours, deleteAllCours } from '@/components/utils/coursUtils';
 import { getAllInter } from '@/components/utils/interUtils';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 import { Promotion } from '@prisma/client';
@@ -51,7 +51,7 @@ export default function Page()  {
          * Le if permet de faire la requête que quand on demande une actualisation (2 fois moins de requêtes)
          */
         if (actualize) {
-            getSeances().then((liste) => {
+            getCours().then((liste) => {
                 setCours(liste);
                 setActualize(false)
             });
@@ -146,7 +146,7 @@ export default function Page()  {
                 // Ajout ou mise à jour de la séance dans la base de données
                 if (formData.id == '') {
                     // Si le formulaire était vide quand on a chargé la modale, alors le cours vient d'être crée
-                    addSeance(newCours).then(() => {
+                    addCours(newCours).then(() => {
                         setActualize(true)
                         notifySuccess("Le cours a bien été ajouté !")
                         toggle();
@@ -157,7 +157,7 @@ export default function Page()  {
                 } else {
                     // Sinon, on modifie un cours déjà enregistré
                     newCours.id = formData.id;
-                    updateSeance(newCours).then(() => {
+                    updateCours(newCours).then(() => {
                         setActualize(true)
                         notifySuccess("Le cours a bien été modifié !")
                         toggle();
@@ -178,7 +178,7 @@ export default function Page()  {
     const handleRemoveOrCancel = () => {
         if (formData.id != '') {
             if (confirm("Etes-vous sûr de supprimer cette séance ?")) {
-                deleteSeance(formData.id).then(() => {
+                deleteCours(formData.id).then(() => {
                     setActualize(true)
                     notifySuccess("Le cours a bien été supprimé !")
                     toggle();
@@ -192,9 +192,9 @@ export default function Page()  {
         }
     }
 
-    const handleDeleteAllSeances = () => {
+    const handleDeleteAllCours = () => {
         if (confirm("Etes-vous sûr de supprimer TOUS les cours enregistrés ? \nCela supprimera également toutes les inscriptions associées à ces cours. \nATTENTION cette action est irréversible !")) {
-            deleteAllSeances().then(() => {
+            deleteAllCours().then(() => {
                 setActualize(true);
                 notifySuccess("Tous les cours et inscriptions associées ont bien été supprimés.")
             }).catch(() => notifyFailure("Erreur lors de la suppression des cours."))
@@ -326,7 +326,7 @@ export default function Page()  {
                         },
                         deleteAllSeances: {
                             text: "Supprimer tous les cours",
-                            click: () => handleDeleteAllSeances()
+                            click: () => handleDeleteAllCours()
                         }
                     }}
                     height="auto"

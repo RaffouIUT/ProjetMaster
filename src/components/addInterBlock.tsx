@@ -9,7 +9,7 @@ interface params {
     setActualize: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AjouterInterBlock = ({ setActualize }: params) => {
+const AddInterBlock = ({ setActualize }: params) => {
     const [nom, setNom] = useState<string>("");
     const [prenom, setPrenom] = useState<string>("");
     const [mail, setMail] = useState<string>("");
@@ -74,4 +74,4 @@ const AjouterInterBlock = ({ setActualize }: params) => {
     );
 };
 
-export default AjouterInterBlock;
+export default AddInterBlock;
