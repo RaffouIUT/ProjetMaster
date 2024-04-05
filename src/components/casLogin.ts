@@ -3,7 +3,7 @@ import { redirect, RedirectType } from 'next/navigation';
 import { DOMParser } from '@xmldom/xmldom';
 import { Cours } from '@prisma/client';
 import { getEtuById } from '@/components/utils/etuUtils';
-import { addInscription } from '@/components/utils/inscriptionsUtils';
+import { addOrUpdateInscription } from '@/components/utils/inscriptionsUtils';
 
 export async function redirectToCas(idSeance: string, idToken: string) {
     redirect(`https://cas-test.univ-lemans.fr/cas/login?service=http://umbriel.univ-lemans.fr/etu/${idSeance}/${idToken}`,RedirectType.push)
@@ -25,7 +25,7 @@ export async function validateTicket(cours: Cours, idToken: string, ticket: stri
     getEtuById(uid).then((etu) => {
         if (etu && etu.promotionId == cours.promotionId) {
             // On changera le present en fonction de l'heure
-            addInscription(cours.id, etu.id, "present")
+            addOrUpdateInscription(cours.id, etu.id, "present")
         }
     })
 
