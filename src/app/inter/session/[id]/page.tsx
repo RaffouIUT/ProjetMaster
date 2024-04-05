@@ -1,74 +1,64 @@
 'use client';
-import { useQRCode } from 'next-qrcode';
-import { SetStateAction, useEffect, useState } from 'react';
-import ProgressBar from '@/components/progressbar';
-import { getEtuPresents } from '@/components/utils/etuUtils';
-import { Etudiant } from '@prisma/client';
-import { getListeEtuByIdNotInList } from '@/components/utils/etuUtils';
-import { addInscription } from '@/components/utils/inscriptionsUtils';
-import { setTokenById } from '@/components/utils/coursUtils';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { Cours, Etudiant } from '@prisma/client';
+import { addInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
+import { getCoursById } from '@/components/utils/coursUtils';
+import { CoursVide } from '@/components/utils/customTypes';
+import { ToastContainer } from 'react-toastify';
+import { notifySuccess } from '@/components/utils/toastUtils';
+import QrCode from '@/components/qrCode';
 
 export default function Page({ params }: {
-    params: {id: string}
+    params: { id: string }
 }) {
-    const [uneFois, setUneFois] = useState<boolean>(true);
-    const [tokenQr, setTokenQr] = useState<string>('');
-    const [actualize, setActualize] = useState<boolean>(true);
-    const [idEtuAAjouter, setIdEtuAAjouter] = useState<string>();
-    const [listeEtu, setListeEtu] = useState<Etudiant[]>([]);
-    const [listeEtuNonPresents, setListeEtuNonPresents] = useState<Etudiant[]>([]);
-    const {SVG} = useQRCode();
+    const [actualizeEtuNonPresents, setActualize] = useState<boolean>(true);
+
     const [options, setOption] = useState<boolean>(false)
     const [recherche, setRecherche] = useState<boolean>(false)
-    const [code, setCode] = useState<boolean>(false)
     const [nom_recherche, setNom_recherche] = useState('');
     const [TempsMaxQR, setTempsMaxQR] = useState(12);
-    const [BuffTempsMaxQR, setBuffTempsMaxQR] = useState(TempsMaxQR);
-    const [TempsQR, setTempsQR] = useState(TempsMaxQR);
-    const handleBuffTempsMaxQR = (event: { target: { value: string; }; }) => {
-        setTempsMaxQR(parseInt(event.target.value));
-    }
+
+
+    const [cours, setCours] = useState<Cours>(structuredClone(CoursVide))
+
+    const [etusPresents, setEtusPresents] = useState<Etudiant[]>([]);
+    const [etusNonPresents, setEtusNonPresents] = useState<Etudiant[]>([]);
 
     useEffect(() => {
-        if(uneFois) {
-            actualiserToken();
-            setUneFois(false);
-        }
+        getCoursById(params.id).then(coursBD => setCours(coursBD))
     }, []);
 
     useEffect(() => {
-        if(actualize) {
-            setActualize(false);
-            let listePresents: Etudiant[] = [];
-            getEtuPresents(params.id).then((liste) => {
-                setListeEtu(liste);
-                listePresents = liste;
-                getListeEtuByIdNotInList(listePresents.map((etu) => etu.id)).then((listeNonPresents) => {
-                    setListeEtuNonPresents(listeNonPresents);
-                });
+        getInscriptionsByCours(cours).then((inscriptions) => {
+            let presentsTmp: Etudiant[] = []
+            let nonPresentsTmp: Etudiant[] = []
+            inscriptions.map((inscription) =>  {
+                if (inscription.present == "absent") {
+                    nonPresentsTmp.push(inscription.etudiant);
+                } else {
+                    presentsTmp.push(inscription.etudiant);
+                }
             })
-        }
-    },[actualize, params.id]);
+            setEtusPresents(presentsTmp);
+            setEtusNonPresents(nonPresentsTmp);
+        })
+    }, [cours, actualizeEtuNonPresents]);
 
-    const refresh = () => {
-        setTimeout(() => {
-            setActualize(true);
-        }, 50);
+    const handleBuffTempsMaxQR = (event: ChangeEvent<HTMLInputElement>) => {
+        setTempsMaxQR(parseInt(event.target.value));
     }
 
-    useEffect(() => {
-        if(idEtuAAjouter === undefined) return;
-        addInscription(params.id, idEtuAAjouter, "présent")
-          .then(() => {
-              setIdEtuAAjouter(undefined);
-              refresh();
-          })
-    }, [idEtuAAjouter, params.id]);
+    const ajouterEtudiant = (idEtu: string) => {
+        addInscription(cours.id, idEtu, "present").then(() => {
+            notifySuccess("L'étudiant a bien été inscrit.");
+            setActualize(true)
+        })
+    }
 
     function actualiserListeMatch(){
         let listeEtuMatch: Etudiant[] = [];
         // on actualise la liste des étudiants qui matchent avec la recherche de l'intervenant
-        listeEtuNonPresents.map((etu) => {
+        etusNonPresents.map((etu) => {
             if ((etu.nom+" "+etu.prenom).match(nom_recherche)) {
                 listeEtuMatch.push(etu);
             }
@@ -76,39 +66,9 @@ export default function Page({ params }: {
         return listeEtuMatch;
     }
 
-    setTimeout(() => {
-        if(TempsQR > 0){
-            setTempsQR(TempsQR - 1);
-        }else{
-            setTempsQR(TempsMaxQR);
-            setBuffTempsMaxQR(TempsMaxQR);
-            actualiserToken();
-        }
-    }, 1000);
-
     const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
         setNom_recherche(event.target.value);
     };
-
-    const generateToken = ():string => {
-        let token:string = "";
-        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < 15; i++)
-            token += possible.charAt(Math.floor(Math.random() * possible.length));
-        return token;
-    }
-
-    const actualiserToken = () => {
-        let token:string = generateToken();
-        setTokenById(params.id, token)
-        setTokenQr(token);
-        console.log("nouveau token : "+token);
-    }
-
-    const afficherCode = () => {
-        setCode(!code);
-    }
-
 
     const afficherRecherche = () => {
         if (options) {
@@ -125,19 +85,23 @@ export default function Page({ params }: {
     }
 
     return (
-        <div className={"flex flex-row w-screen h-screen text-4xl"}>
-
+        <section className={"flex flex-row w-screen h-screen p-3"}>
+            <ToastContainer />
             {/* Menu latéral gauche, boutons d'actions */}
-            <div className={"w-1/4 h-full"}>
-                <div className={"h-1/6 flex items-center ml-5"}>
-                    <button onClick={afficherRecherche} className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant </button>
-                    <button className={"ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight"}>?</button>
+            <div className={"basis-1/4"}>
+                <div className={'h-1/6 flex items-center ml-5'}>
+                    <button onClick={afficherRecherche}
+                            className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant
+                    </button>
+                    <button onClick={afficherOptions}
+                            className="ml-5  flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">⚙️
+                    </button>
                 </div>
                 {
                     options ? (
-                            <div className={"flex flex-col m-4 bg-gray-500 text-center"}>
+                        <div className={'flex flex-col m-4 bg-gray-500 text-center'}>
 
-                                <div>Paramètres</div>
+                            <div>Paramètres</div>
                                 <div className={"mt-2 bg-gray-400"}>Temps Qr Code</div>
                                 <div className={"flex flex-cols justify-center space-x-2"}>
                                     <input onChange={handleBuffTempsMaxQR} type="range" id="volume" name="volume" min="2" max="20" value={TempsMaxQR}/>
@@ -154,10 +118,7 @@ export default function Page({ params }: {
                                     {actualiserListeMatch().map((etu) => (
                                       <button key={etu.id}
                                               type="button"
-                                              onClick={() => {
-                                                  setIdEtuAAjouter(etu.id);
-                                                  setActualize(true);
-                                              }}>{etu.nom + ' ' + etu.prenom}</button>
+                                              onClick={() => ajouterEtudiant(etu.id)}>{etu.nom + ' ' + etu.prenom}</button>
                                     ))}
                                 </div>
                             </div>
@@ -168,51 +129,17 @@ export default function Page({ params }: {
             </div>
 
             {/* Partie centrale, QR CODE*/}
-            <div className={"w-1/2 h-full"}>
-                {/* 3 boutons centraux */}
-                <div className={"h-1/6 items-center flex flex-row justify-center"}>
-                    <button onClick={afficherOptions} className="ml-5  flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">⚙️</button>
-                    <button onClick={afficherCode} className="ml-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">Afficher code</button>
-                    <button className="ml-5 mr-5 flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">?</button>
-                </div>
-                {/* barre de chargement */}
-                <div className={" flex flex-row justify-center"}>
-                    <div className={"mt-4 w-5/6 h-1/6 bg-gray-500 text-center rounded-md"}> <ProgressBar progress={(TempsQR/BuffTempsMaxQR)*100}/> </div>
-                </div>
-                {/* QR CODE */}
-                <div className={"flex justify-center mt-4"}>
-                    <SVG
-                        text={'http://umbriel.univ-lemans.fr/etu/'+params.id+'/'+tokenQr}
-                        options={{
-                            errorCorrectionLevel: 'M',
-                            margin: 0,
-                            scale: 0,
-                            width: 620,
-                            color: {
-                                dark: '#000000',
-                                light: '#ffffff',
-                            },
-                        }}
-                    />
-                </div>
-                {
-                    code ? (
-                        <div className={"flex text-xl text-center justify-center"}>Code et lien pour s’inscrire :<br/>
-                            {'http://umbriel.univ-lemans.fr/etu/' + params.id + '/' + tokenQr}
-                        </div>
-                    ) : (
-                        <div className={"flex text-xl text-center justify-center"}>Veuillez cliquer sur le boutton pour afficher le code</div>
-                    )
-                }
-            </div>
+            <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} />
 
             {/* Partie droite, liste des étudiants */}
-            <div className={"w-1/4 bg-gray-400 h-full"}>
-                <div className={"h-1/6 items-center flex flex-row justify-center"}>LISTE NOMS ETU</div>
-                <div className={"h-5/6 text-center max-h-full overflow-scroll "}> {  listeEtu.map((etu) => (
-                  <p key={etu.id}>{etu.nom + ' ' + etu.prenom}</p>
-                ))}</div>
+            <div className={"basis-1/4 bg-gray-400"}>
+                <h2 className={"text-center m-2"}>Etudiants Inscrits</h2>
+                <ul className={"h-5/6 overflow-scroll max-h-full"}>
+                    {etusPresents.map((etu) => (
+                        <li key={etu.id}>{etu.nom + ' ' + etu.prenom}</li>
+                    ))}
+                </ul>
             </div>
-        </div>
+        </section>
     );
 }

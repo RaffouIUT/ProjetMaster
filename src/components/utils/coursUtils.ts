@@ -1,8 +1,9 @@
 'use server';
 import db from '@/modules/db';
 import { EventInput } from '@fullcalendar/core';
-import { FormCours } from '@/components/utils/customTypes';
+import { CoursVide, FormCours } from '@/components/utils/customTypes';
 import { deleteAllInscriptions } from '@/components/utils/inscriptionsUtils';
+import { Cours } from '@prisma/client';
 
 export const getCours = async () => {
     const liste: EventInput[] = [];
@@ -80,11 +81,12 @@ export const deleteCours = async (id: string) => {
 };
 
 export const getCoursById = async (id: string) => {
-    return db.cours.findUnique({
+    const cours: Cours | null = await db.cours.findUnique({
         where: {
             id: id
         }
-    });
+    })
+    return cours ?? structuredClone(CoursVide)
 }
 
 export const getAllCoursByPromoId = async(promoId: string) => {

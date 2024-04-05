@@ -10,7 +10,7 @@ import { EtudiantVide } from '@/components/utils/customTypes';
 
 interface Params {
 	promos: Promotion[],
-	setActualize: React.Dispatch<React.SetStateAction<any>>,
+	setActualize: React.Dispatch<React.SetStateAction<boolean>>,
 	etudiant: Etudiant
 }
 

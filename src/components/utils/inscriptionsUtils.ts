@@ -2,7 +2,7 @@
 import db from '@/modules/db';
 import { getAllEtuByPromoId, getEtuById } from '@/components/utils/etuUtils';
 import { getAllCoursByPromoId, getCoursById } from '@/components/utils/coursUtils';
-import { PresenceCours, PresenceEtuCours } from '@/components/utils/customTypes';
+import { PresenceCours, PresenceEtuCours, PresenceEtudiant } from '@/components/utils/customTypes';
 import { Cours, Etudiant } from '@prisma/client';
 
 export const getInsciptionBySessionId = async (id_session:string) => {
@@ -32,7 +32,6 @@ export const addInscription = async (id_session:string, id_etu:string, ponctuali
   }
 
 };
-
 
 export const getInscriptionsByPromoId = async (id: string) => {
   const response = await db.inscription.findMany({
@@ -90,6 +89,41 @@ export const getInscriptionsByPromoId = async (id: string) => {
   })
   return presencesListeTmp
 }
+
+export const getInscriptionsByCours = async (cours: Cours) => {
+  /**
+   * Je veux en sortie un objet qui me donne pour chaque élève s'il est inscrit au cours actuel (coursId) ou pas
+   */
+  let etuPresence: PresenceEtudiant[] = []
+  await getAllEtuByPromoId(cours.promotionId).then((etus: Etudiant[]) => {
+    etus.map((etu) => etuPresence.push({etudiant: etu, present: "absent"}) )
+  });
+
+  // Tous les étudiants inscrits
+  const inscriptions: {etudiant: Etudiant, ponctualite: string}[] = await db.inscription.findMany({
+    where: {
+      coursId: cours.id
+    },
+    select: {
+      etudiant: true,
+      ponctualite: true
+    },
+    orderBy: {
+      cours: {
+        dateDebut: "asc"
+      }
+    }
+  });
+
+  etuPresence.map((etu) => {
+    if (inscriptions.some( inscription => inscription.etudiant.id == etu.etudiant.id)) {
+      etu.present = "present";
+    }
+  })
+
+  return etuPresence
+}
+
 
 export const deleteAllInscriptions = async () => {
   await db.inscription.deleteMany({})

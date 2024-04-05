@@ -38,6 +38,11 @@ export type PresenceEtuCours = {
     total: number
 }
 
+export type PresenceEtudiant = {
+    etudiant: Etudiant,
+    present: string
+}
+
 export type EmailOptions = {
     to: string;
     subject: string;
@@ -59,6 +64,18 @@ export const InterEtenduVide: InterEtendu = {
 
 export const PromotionVide: Promotion = {
     abreviation: '', id: '', nom: ''
+}
+
+export const CoursVide: Cours = {
+    dateDebut: new Date(),
+    dateFin: new Date(),
+    id: '',
+    intervenantId: '',
+    nom: '',
+    promotionId: '',
+    salle: '',
+    tokenQrCode: '',
+    updatedAt: new Date()
 }
 
 export const FormCoursVide: FormCours = {
