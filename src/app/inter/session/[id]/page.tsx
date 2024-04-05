@@ -1,21 +1,24 @@
 'use client';
-import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Cours, Etudiant } from '@prisma/client';
-import { addInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
+import { addOrUpdateInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
 import { getCoursById } from '@/components/utils/coursUtils';
 import { CoursVide } from '@/components/utils/customTypes';
 import { ToastContainer } from 'react-toastify';
 import { notifySuccess } from '@/components/utils/toastUtils';
 import QrCode from '@/components/qrCode';
+import { Button, Card, CardBody, CardHeader, Input } from 'reactstrap';
+import { TbHelp } from 'react-icons/tb';
+
+import '@/components/custom.css';
 
 export default function Page({ params }: {
     params: { id: string }
 }) {
-    const [actualizeEtuNonPresents, setActualize] = useState<boolean>(true);
+    const [actualizeEtuNonPresents, setActualize] = useState<boolean>(false);
 
     const [options, setOption] = useState<boolean>(false)
     const [recherche, setRecherche] = useState<boolean>(false)
-    const [nom_recherche, setNom_recherche] = useState('');
     const [TempsMaxQR, setTempsMaxQR] = useState(12);
 
 
@@ -48,27 +51,16 @@ export default function Page({ params }: {
         setTempsMaxQR(parseInt(event.target.value));
     }
 
-    const ajouterEtudiant = (idEtu: string) => {
-        addInscription(cours.id, idEtu, "present").then(() => {
-            notifySuccess("L'étudiant a bien été inscrit.");
-            setActualize(true)
-        })
+    const ajouterEtudiant = () => {
+        const select = document.getElementById("select_etu")
+        let idEtu = "";
+        if (select && select instanceof HTMLSelectElement) { idEtu = select.value }
+        if (idEtu != "")
+            addOrUpdateInscription(cours.id, idEtu, "present").then(() => {
+                notifySuccess("L'étudiant a bien été inscrit.");
+                setActualize(!actualizeEtuNonPresents)
+            })
     }
-
-    function actualiserListeMatch(){
-        let listeEtuMatch: Etudiant[] = [];
-        // on actualise la liste des étudiants qui matchent avec la recherche de l'intervenant
-        etusNonPresents.map((etu) => {
-            if ((etu.nom+" "+etu.prenom).match(nom_recherche)) {
-                listeEtuMatch.push(etu);
-            }
-        })
-        return listeEtuMatch;
-    }
-
-    const handleChange = (event: { target: { value: SetStateAction<string>; }; }) => {
-        setNom_recherche(event.target.value);
-    };
 
     const afficherRecherche = () => {
         if (options) {
@@ -85,58 +77,68 @@ export default function Page({ params }: {
     }
 
     return (
-        <section className={"flex flex-row w-screen h-screen p-3"}>
+        <section className={"flex flex-row w-screen h-screen"}>
             <ToastContainer />
             {/* Menu latéral gauche, boutons d'actions */}
-            <div className={"basis-1/4"}>
-                <div className={'h-1/6 flex items-center ml-5'}>
-                    <button onClick={afficherRecherche}
-                            className="flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300 leading-tight tracking-tight">Ajouter étudiant
-                    </button>
-                    <button onClick={afficherOptions}
-                            className="ml-5  flex text-black hover:bg-primary-700 rounded-lg text-xl px-5 py-2.5 text-center bg-gray-300  leading-tight tracking-tight">⚙️
-                    </button>
+            <div className={"basis-1/4 p-3"}>
+                <div className={'flex items-center justify-around mb-3'}>
+                    <div className={"flex flex-row"}>
+                        <Button onClick={afficherRecherche} className={'mr-3'}>Ajouter étudiant</Button>
+                        <span className={'align-content-center'}>
+                            <TbHelp className={'cursor-help'}
+                                    title={"Si certains étudiants n'arrivent pas à scanner le QR code ni à accéder au lien, vous pouvez les ajouter manuellement \n" +
+                                        "S'ils sont dans la promo qui assiste au cours, ils devraient être dans la liste."} />
+                        </span>
+                    </div>
+                    <div className={"flex flex-row"}>
+                        <Button onClick={afficherOptions} className={'mr-3'}>⚙️</Button>
+                        <span className={'align-content-center'}>
+                            <TbHelp className={'cursor-help'}
+                                    title={"Si le temps pour scanner le QR code et s'inscrire, vous pouvez augmenter le temps avant qu'il ne change."} />
+                        </span>
+                    </div>
                 </div>
-                {
-                    options ? (
-                        <div className={'flex flex-col m-4 bg-gray-500 text-center'}>
-
-                            <div>Paramètres</div>
-                                <div className={"mt-2 bg-gray-400"}>Temps Qr Code</div>
-                                <div className={"flex flex-cols justify-center space-x-2"}>
-                                    <input onChange={handleBuffTempsMaxQR} type="range" id="volume" name="volume" min="2" max="20" value={TempsMaxQR}/>
-                                    <p>{TempsMaxQR} sec</p>
-                                </div>
-
-                            </div>
-                        ) :
-                        recherche ? (
-                            <div className={"flex flex-col items-center m-4 bg-gray-300 "}>
-                                <input onChange={handleChange} type="text" id="recherche" name="recherche" size={50}
-                                       className="flex border mx-4 my-4 border-black text-white-900 text-sm rounded-lg focus:ring-black focus:border-black-500 w-1/2 p-2.5"/>
-                                <div className={'text-center overflow-scroll max-h-96'}>
-                                    {actualiserListeMatch().map((etu) => (
-                                      <button key={etu.id}
-                                              type="button"
-                                              onClick={() => ajouterEtudiant(etu.id)}>{etu.nom + ' ' + etu.prenom}</button>
+                {options ? (<>
+                    <Card className="my-2" color="secondary" inverse>
+                        <CardHeader>Changer le temps du QR code</CardHeader>
+                        <CardBody className={'flex flex-row align-items-center'}>
+                        <input className={"basis-3/4 mr-1"} onChange={handleBuffTempsMaxQR} type="range" id="volume" name="volume"
+                                   min="2" max="20" value={TempsMaxQR} />
+                            <label htmlFor={'volume'} className={"basis-1/4 text-right"}>{TempsMaxQR} sec</label>
+                        </CardBody>
+                    </Card>
+                </>) : recherche ? (<>
+                        <Card className="my-2" color="secondary" inverse>
+                            <CardHeader>Ajouter un étudiant</CardHeader>
+                            <CardBody className={"flex flex-row"}>
+                                <Input className={"mr-3"} id={'select_etu'} name={'select_etu'} type={'select'}
+                                       defaultValue={""} required>
+                                    <option disabled value={''}>Sélectionner un étudiant</option>
+                                    {etusNonPresents.map((etu) => (
+                                        <option value={etu.id} key={etu.id}>{etu.nom} {etu.prenom}</option>
                                     ))}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className={"m-4"}></div>
-                        )
+                                </Input>
+                                <Button onClick={ajouterEtudiant} color={"primary"}>Ajouter</Button>
+                            </CardBody>
+                        </Card>
+                    </>) : ""
                 }
             </div>
 
             {/* Partie centrale, QR CODE*/}
-            <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} />
+            <section className={'basis-1/2 flex flex-column py-3'}>
+                <div className={"text-center mb-4"}>
+                    <h2 className={"m-0"}>Module {cours.nom}</h2>
+                </div>
+                <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} />
+            </section>
 
             {/* Partie droite, liste des étudiants */}
-            <div className={"basis-1/4 bg-gray-400"}>
-                <h2 className={"text-center m-2"}>Etudiants Inscrits</h2>
-                <ul className={"h-5/6 overflow-scroll max-h-full"}>
+            <div className={"basis-1/4 flex flex-column col-droite-session p-3"}>
+                <h1 className={"text-center mb-4"}>Etudiants Inscrits</h1>
+                <ul className={"overflow-y-scroll h-fit flex-1"}>
                     {etusPresents.map((etu) => (
-                        <li key={etu.id}>{etu.nom + ' ' + etu.prenom}</li>
+                        <li className={"text-2xl"} key={etu.id}>{etu.nom + ' ' + etu.prenom}</li>
                     ))}
                 </ul>
             </div>

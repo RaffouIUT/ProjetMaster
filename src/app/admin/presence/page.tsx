@@ -133,7 +133,7 @@ export default function Page() {
                                 <button onClick={() => setSelectedEtu(structuredClone(EtudiantVide))}>Cours</button>
                                 &nbsp;
                                 <span className={'align-content-center'}>
-                                    <TbHelp className={'cursor-pointer'}
+                                    <TbHelp className={'cursor-help'}
                                         title={"Cliquer sur le nom d'un étudiant pour le modifier. Cliquer sur l'en-tête de la colonne pour vider le formulaire."} />
                                 </span>
                             </th>

@@ -20,19 +20,6 @@ export const getAllInter = async () => {
 	return liste
 };
 
-/*
-* Fonction qui permet de rechercher un intervenant par son id
-* @param id_inter : string
-* @return intervenant : Intervenant
- */
-export async function rechercherInter(id_inter: string) {
-	return db.intervenant.findUnique({
-		where: {
-			id: id_inter,
-		},
-	});
-}
-
 export const deleteInter = async (idIntervenant: string) => {
 	await db.intervenant.delete({
 		where: {

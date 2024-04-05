@@ -1,9 +1,11 @@
 'use client';
-import ProgressBar from '@/components/progressbar';
 import { useQRCode } from 'next-qrcode';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { setTokenById } from '@/components/utils/coursUtils';
-import { Button } from 'reactstrap';
+import { Button, Progress } from 'reactstrap';
+
+import '@/components/custom.css';
+import { TbHelp } from 'react-icons/tb';
 
 interface Params {
   tempsMaxQr: number,
@@ -22,10 +24,15 @@ export default function QrCode({ tempsMaxQr, coursId } : Params) {
 
     const toggleCode = () => { setCode(!code); }
 
+    useEffect(() => {
+        if (coursId)
+            actualiserToken()
+    }, [coursId]);
+
     setTimeout(() => {
-        if(TempsQR > 0){
+        if (TempsQR > 0) {
           setTempsQR(TempsQR - 1);
-        }else{
+        } else {
           setTempsQR(tempsMaxQr);
           setBuffTempsMaxQR(tempsMaxQr);
           actualiserToken();
@@ -43,47 +50,46 @@ export default function QrCode({ tempsMaxQr, coursId } : Params) {
     const actualiserToken = () => {
         let token:string = generateToken();
         setTokenById(coursId, token).then(() => {
-          setTokenQr(token);
+            setTokenQr(token);
+            console.log("nouveau token : "+token);
         })
-        console.log("nouveau token : "+token);
     }
 
-
-    return (
-        <section className={'basis-1/2'}>
-            <div className={"text-center"}>
-                <Button color={"secondary"} onClick={toggleCode}>Afficher code</Button>
+    return (<>
+        <div className={"flex flex-column align-items-center basis-1/8"}>
+            <div className={"flex flex-row"}>
+                <Button color={'secondary'} onClick={toggleCode}>Afficher le lien</Button>
+                &nbsp;
+                <span className={'align-content-center'}>
+                    <TbHelp className={'cursor-help'}
+                            title={"Si certains étudiants n'arrivent pas à scanner le QR code, cliquer sur le bouton pour afficher l'URL où ils doivent se rendre."} />
+                </span>
             </div>
-            {/* barre de chargement */}
-            <div className={" flex flex-row justify-center"}>
-                <div className={"mt-4 w-5/6 h-1/6 bg-gray-500 text-center rounded-md"}>
-                    <ProgressBar progress={(TempsQR / BuffTempsMaxQR) * 100} />
-                </div>
+            <div className={'mt-4 w-5/6'}>
+                <Progress value={(TempsQR / BuffTempsMaxQR) * 100} />
             </div>
-            {/* QR CODE */}
-            <div className={"flex justify-center mt-4"}>
-                <SVG
-                text={'http://umbriel.univ-lemans.fr/etu/' + coursId + '/' + tokenQr}
+        </div>
+        {/* QR CODE */}
+        <div className={'flex justify-center my-4 basis-5/8 svg-container'}>
+            <SVG text={'http://umbriel.univ-lemans.fr/etu/' + coursId + '/' + tokenQr}
                 options={{
                     errorCorrectionLevel: 'M',
                     margin: 0,
                     scale: 0,
-                    width: 620,
                     color: {
-                    dark: '#000000',
-                    light: '#ffffff',
+                        dark: '#000000',
+                        light: '#ffffff',
                     },
                 }}
-                />
-            </div>
-            <div className={"flex text-xl text-center justify-center"}>
-                {code ? ( <>
-                Code et lien pour s’inscrire :<br/>
+            />
+        </div>
+        <div className={"flex text-xl text-center justify-center basis-1/8"}>
+            {code ? ( <>
+                Lien pour s’inscrire :<br/>
                 {'http://umbriel.univ-lemans.fr/etu/' + coursId + '/' + tokenQr}
-                </>) : (<>
+            </>) : (<>
                 Veuillez cliquer sur le bouton pour afficher le code
-                </>)}
-            </div>
-        </section>
-    )
+            </>)}
+        </div>
+    </>)
 }

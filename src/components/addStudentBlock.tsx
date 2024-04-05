@@ -108,7 +108,7 @@ export default function AddStudentBlock({ promos, setActualize, etudiant }: Para
 								<p className={"flex flex-row mb-2"}>
 									Importer depuis un fichier &nbsp;
 									<span className={"align-content-center"}>
-										<TbHelp className={"cursor-pointer"}  title={"Importer les étudiants depuis un fichier. Le fichier doit correspondre au format du fichier d'export d'umtice."} />
+										<TbHelp className={"cursor-help"}  title={"Importer les étudiants depuis un fichier. Le fichier doit correspondre au format du fichier d'export d'umtice."} />
 									</span>
 								</p>
 								<Input bsSize={"sm"} id="exampleFile" name="file" type="file" />

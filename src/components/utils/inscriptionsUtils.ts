@@ -1,37 +1,9 @@
 'use server';
 import db from '@/modules/db';
-import { getAllEtuByPromoId, getEtuById } from '@/components/utils/etuUtils';
-import { getAllCoursByPromoId, getCoursById } from '@/components/utils/coursUtils';
+import { getAllEtuByPromoId } from '@/components/utils/etuUtils';
+import { getAllCoursByPromoId } from '@/components/utils/coursUtils';
 import { PresenceCours, PresenceEtuCours, PresenceEtudiant } from '@/components/utils/customTypes';
 import { Cours, Etudiant } from '@prisma/client';
-
-export const getInsciptionBySessionId = async (id_session:string) => {
-  return db.inscription.findMany({
-    where: {
-      coursId: id_session,
-    },
-    include: {
-      etudiant: true
-    }
-  });
-};
-
-export const addInscription = async (id_session:string, id_etu:string, ponctualite: string) => {
-  let etu = await getEtuById(id_etu);
-  let seance = await getCoursById(id_session);
-
-  if(etu  && seance){
-    await db.inscription.create({
-      data: {
-        etudiantId: id_etu,
-        coursId: id_session,
-        ponctualite: ponctualite
-      }
-    }).then(() => { // @ts-ignore impossible qu'ils soient null
-      console.log("Inscription ajoutée de l'étudiant " + etu.nom + " " + etu.prenom + " au cours " + seance.nom)});
-  }
-
-};
 
 export const getInscriptionsByPromoId = async (id: string) => {
   const response = await db.inscription.findMany({

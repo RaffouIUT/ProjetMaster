@@ -19,3 +19,10 @@
 .fc-deleteAllSeances-button:hover {
     background-color: #bb2d3b !important;
 }
+.svg-container svg {
+    height: 100%;
+    width: auto;
+}
+.col-droite-session {
+    background-color: rgba(233, 233, 233, 1);
+}

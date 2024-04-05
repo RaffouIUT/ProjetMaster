@@ -1,21 +1,13 @@
-'use server'
+'use server';
 
-import db from '@/modules/db'
+import db from '@/modules/db';
 import { Etudiant } from '@prisma/client';
-import { deleteAllInscriptions, getInsciptionBySessionId } from '@/components/utils/inscriptionsUtils';
+import { deleteAllInscriptions } from '@/components/utils/inscriptionsUtils';
 
 export const getEtuById = async (id: string) => {
   return db.etudiant.findUnique({
     where: {
       id: id,
-    }
-  })
-}
-
-export const getListeEtuByIdNotInList = async (listeIdEtu: string[]) => {
-  return db.etudiant.findMany({
-    where: {
-      id: { notIn: listeIdEtu},
     }
   })
 }
@@ -27,13 +19,6 @@ export const getAllEtuByPromoId = async(promoId: string) => {
     }
   })
 }
-
-export const getEtuPresents = async (id_session: string) => {
-  const liste: Etudiant[] = [];
-  const inscriptions = await getInsciptionBySessionId(id_session);
-  inscriptions.map((inscription) => liste.push(inscription.etudiant))
-  return liste
-};
 
 export const deleteAllEtu = async () => {
   await deleteAllInscriptions();
