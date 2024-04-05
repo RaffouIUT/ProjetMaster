@@ -1,0 +1,18 @@
+[Unit]
+Description=Gestionnaire de presence
+
+[Service]
+Type=simple
+Restart=on-failure
+StartLimitBurst=2
+# Restart, but not more than once every 10 minutes
+#StartLimitInterval=600
+# Restart, but not more than once every 30s (for testing purposes)
+StartLimitInterval=301~StartLimitBurst=2
+User=root
+Group=root
+WorkingDirectory=/root/ProjetMaster
+ExecStart=/root/ProjetMaster/src/service/exec_script.sh
+
+[Install]
+WantedBy=multi-user.target
