@@ -71,7 +71,7 @@ export default function QrCode({ tempsMaxQr, coursId } : Params) {
         </div>
         {/* QR CODE */}
         <div className={'flex justify-center my-4 basis-5/8 svg-container'}>
-            <SVG text={'http://umbriel.univ-lemans.fr/etu/' + coursId + '/' + tokenQr}
+            <SVG text={`${process.env.SERVER_URL}/etu/${coursId}/${tokenQr}`}
                 options={{
                     errorCorrectionLevel: 'M',
                     margin: 0,
@@ -86,7 +86,7 @@ export default function QrCode({ tempsMaxQr, coursId } : Params) {
         <div className={"flex text-xl text-center justify-center basis-1/8"}>
             {code ? ( <>
                 Lien pour s’inscrire :<br/>
-                {'http://umbriel.univ-lemans.fr/etu/' + coursId + '/' + tokenQr}
+                {`${process.env.SERVER_URL}/etu/${coursId}/${tokenQr}`}
             </>) : (<>
                 Veuillez cliquer sur le bouton pour afficher le code
             </>)}

@@ -3,9 +3,11 @@ const nextConfig = {
     experimental: {
         serverActions: true,
     },
+    env: {
+        SERVER_URL: "http://localhost:3000"
+    }
 }
-
-const withTM = require("next-transpile-modules")([
+require("next-transpile-modules")([
     "@fullcalendar/common",
     "@babel/preset-react",
     "@fullcalendar/common",
@@ -14,5 +16,4 @@ const withTM = require("next-transpile-modules")([
     "@fullcalendar/react",
     "@fullcalendar/timegrid",
 ]);
-
 module.exports = nextConfig
