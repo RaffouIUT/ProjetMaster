@@ -129,20 +129,6 @@ CREATE TABLE public.intervenants (
 ALTER TABLE public.intervenants OWNER TO postgres;
 
 --
--- Name: posts; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.posts (
-    id text NOT NULL,
-    content text NOT NULL,
-    "createdAt" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updatedAt" timestamp(3) without time zone NOT NULL
-);
-
-
-ALTER TABLE public.posts OWNER TO postgres;
-
---
 -- Name: promotions; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -201,14 +187,6 @@ COPY public.inscriptions ("coursId", "etudiantId") FROM stdin;
 --
 
 COPY public.intervenants (id, nom, prenom, mail, login, password) FROM stdin;
-\.
-
-
---
--- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.posts (id, content, "createdAt", "updatedAt") FROM stdin;
 \.
 
 
@@ -272,28 +250,12 @@ ALTER TABLE ONLY public.inscriptions
 ALTER TABLE ONLY public.intervenants
     ADD CONSTRAINT intervenants_pkey PRIMARY KEY (id);
 
-
---
--- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.posts
-    ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
-
-
 --
 -- Name: promotions promotions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.promotions
     ADD CONSTRAINT promotions_pkey PRIMARY KEY (id);
-
-
---
--- Name: posts_createdAt_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX "posts_createdAt_idx" ON public.posts USING btree ("createdAt");
 
 
 --

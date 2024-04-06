@@ -202,7 +202,7 @@ const insertEtu = async (promos: any) => {
 		create: {
 			id: "i182554",
 			nom: "Donneau",
-			prenom: "Raphael",
+			prenom: "Rafael",
 			promotionId: promos.m1.id
 		}
 	})
