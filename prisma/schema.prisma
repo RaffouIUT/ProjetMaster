@@ -11,16 +11,6 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([createdAt])
-  @@map("posts")
-}
-
 model Intervenant {
   id       String  @id @default(cuid())
   nom      String
