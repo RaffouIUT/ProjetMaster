@@ -3,13 +3,15 @@
 import db from '@/modules/db';
 import { Etudiant } from '@prisma/client';
 import { deleteAllInscriptions } from '@/components/utils/inscriptionsUtils';
+import { EtudiantVide } from '@/components/utils/customTypes';
 
 export const getEtuById = async (id: string) => {
-  return db.etudiant.findUnique({
+  const etu = await db.etudiant.findUnique({
     where: {
       id: id,
     }
-  })
+  });
+  return etu ?? structuredClone(EtudiantVide)
 }
 
 export const getAllEtuByPromoId = async(promoId: string) => {
