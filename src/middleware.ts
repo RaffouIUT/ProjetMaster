@@ -4,7 +4,9 @@ import {NextResponse} from "next/server";
 
 export const config = {
     //matcher: ['/admin/:path*', '/inter/:path*'],
-    matcher: '/:path*',
+    //matcher: '/:path*',
+
+    matcher: ['/((?!etu).*)',],
 }
 
 
