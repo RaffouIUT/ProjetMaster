@@ -7,10 +7,12 @@ import { CoursVide } from '@/components/utils/customTypes';
 import { ToastContainer } from 'react-toastify';
 import { notifySuccess } from '@/components/utils/toastUtils';
 import QrCode from '@/components/qrCode';
-import { Button, Card, CardBody, CardHeader, Input } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Input, NavLink } from 'reactstrap';
 import { TbHelp } from 'react-icons/tb';
 
 import '@/components/custom.css';
+import Link from 'next/link';
+import { GoArrowLeft } from 'react-icons/go';
 
 export default function Page({ params }: {
     params: { id: string }
@@ -81,21 +83,24 @@ export default function Page({ params }: {
             <ToastContainer />
             {/* Menu latéral gauche, boutons d'actions */}
             <div className={"basis-1/4 p-3"}>
-                <div className={'flex items-center justify-around mb-3'}>
-                    <div className={"flex flex-row"}>
-                        <Button onClick={afficherRecherche} className={'mr-3'}>Ajouter étudiant</Button>
-                        <span className={'align-content-center'}>
-                            <TbHelp className={'cursor-help'}
-                                    title={"Si certains étudiants n'arrivent pas à scanner le QR code ni à accéder au lien, vous pouvez les ajouter manuellement \n" +
-                                        "S'ils sont dans la promo qui assiste au cours, ils devraient être dans la liste."} />
-                        </span>
-                    </div>
-                    <div className={"flex flex-row"}>
-                        <Button onClick={afficherOptions} className={'mr-3'}>⚙️</Button>
-                        <span className={'align-content-center'}>
-                            <TbHelp className={'cursor-help'}
-                                    title={"Si le temps pour scanner le QR code et s'inscrire, vous pouvez augmenter le temps avant qu'il ne change."} />
-                        </span>
+                <div className={"flex flex-column"}>
+                    <li className={"list-none mb-4 ml-2"}><a href={"/inter"} className={"flex flex-row align-items-center"}><GoArrowLeft /> &nbsp; <span className={"underline underline-offset-4"}>Revenir à la sélection des conférences</span></a></li>
+                    <div className={'flex items-center justify-around mb-3'}>
+                        <div className={"flex flex-row"}>
+                            <Button onClick={afficherRecherche} className={'mr-3'}>Ajouter étudiant</Button>
+                            <span className={'align-content-center'}>
+                                <TbHelp className={'cursor-help'}
+                                        title={"Si certains étudiants n'arrivent pas à scanner le QR code ni à accéder au lien, vous pouvez les ajouter manuellement \n" +
+                                            "S'ils sont dans la promo qui assiste au cours, ils devraient être dans la liste."} />
+                            </span>
+                        </div>
+                        <div className={"flex flex-row"}>
+                            <Button onClick={afficherOptions} className={'mr-3'}>⚙️</Button>
+                            <span className={'align-content-center'}>
+                                <TbHelp className={'cursor-help'}
+                                        title={"Si le temps pour scanner le QR code et s'inscrire, vous pouvez augmenter le temps avant qu'il ne change."} />
+                            </span>
+                        </div>
                     </div>
                 </div>
                 {options ? (<>

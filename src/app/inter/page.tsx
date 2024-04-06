@@ -44,8 +44,13 @@ export default function Page() {
     return (
         <section className={"p-3"}>
             <ToastContainer />
-            <h1 className={"text-center"}>Séléction Conférence</h1>
-            <Button onClick={HandleDeconnexion} size={"sm"} color={"danger"} >Déconnexion</Button>
+            <div className={"flex"}>
+                <div className={"basis-1/8"}></div>
+                <h1 className={"text-center basis-3/4"}>Séléction Conférence</h1>
+                <div className={"basis-1/8 flex flex-row align-items-center justify-center"} >
+                    <Button onClick={HandleDeconnexion} color={"danger"} >Déconnexion</Button>
+                </div>
+            </div>
             <div className={"grid grid-cols-3"}>
                 {intervenant.cours.map((cours => (
                     <div key={cours.id} className={'flex bg-gray-300 rounded-lg mx-4 my-4 justify-center justify-self-center text-center w-5/6 h-5/6 text-2xl'}>

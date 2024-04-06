@@ -6,9 +6,9 @@ import { deleteInter, getAllInter } from '@/components/utils/interUtils';
 import { Button, Table } from 'reactstrap';
 import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import NavBarAdmin from '@/components/navBarAdmin';
-import {redirect, useRouter} from "next/navigation";
-import Cookies from "js-cookie";
-import {fonctionRedirectHome} from "@/components/utils/connexionUtils";
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { fonctionRedirectHome } from '@/components/utils/connexionUtils';
 
 
 export default function Page() {
@@ -33,25 +33,10 @@ export default function Page() {
         }).catch(() => notifyFailure("Erreur lors de la suppression BD de l'intervenant. \n Vérifiez qu'il n'a plus de cours associé."));
     };
 
-    const router = useRouter();
-    async function HandleDeconnexion() {
-        Cookies.set('authAdmin', '');
-        router.push('/');
-        const serverUrl = process.env.SERVER_URL;
-        if(serverUrl === undefined) {
-            alert('Erreur lors de la redirection');
-            return ;
-        }else{
-            await fonctionRedirectHome()
-        }
-
-    }
-
     return (
         <section className="flex flex-column min-h-screen">
             <NavBarAdmin />
             <section className={"p-4"}>
-                <Button onClick={HandleDeconnexion} size={"sm"} color={"danger"} >Déconnexion</Button>
                 <AddInterBlock setActualize={setActualizeInters}/>
                 <section>
                     <h3>Liste des intervenants</h3>
