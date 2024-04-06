@@ -28,6 +28,7 @@ import { fillForm, checkField, getCorrectRender } from '@/components/utils/calen
 
 export default function Page()  {
 
+
     const [calendarRef, setCalendar] = useState<FullCalendar>();
 
     const [modal, setModal] = useState(false);

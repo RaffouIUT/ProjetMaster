@@ -19,7 +19,9 @@ import ExportPresenceTable from '@/components/exportPresenceTable';
 import AddStudentBlock from '@/components/addStudentBlock';
 import { TbHelp } from 'react-icons/tb';
 
+
 export default function Page() {
+
 
     const [promos, setPromos] = useState<Promotion[]>([]);
 

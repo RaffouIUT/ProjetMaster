@@ -4,14 +4,23 @@ import Link from 'next/link';
 import { InterEtendu, InterEtenduVide } from '@/components/utils/customTypes';
 import { getInterById } from '@/components/utils/interUtils';
 import { ToastContainer } from 'react-toastify';
+import Cookies from "js-cookie";
 
 export default function Page() {
 
     const [intervenant, setIntervenant] = useState<InterEtendu>(structuredClone(InterEtenduVide));
 
-    const intervenantId: string = "clufqzjyg0000fenckivgu4vo";
+
 
     useEffect(() => {
+        let intervenantId: string ='';
+        const cookie = Cookies.get('authInter')
+        if(cookie === undefined || cookie === '') {
+            alert('Vous n\'êtes pas connecté');
+        }else{
+            intervenantId = cookie.toString();
+            console.log(intervenantId)
+        }
         getInterById(intervenantId).then((inter) => {
             setIntervenant(inter)
         })

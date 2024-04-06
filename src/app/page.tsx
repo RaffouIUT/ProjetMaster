@@ -1,6 +1,34 @@
+'use client';
 import Image from "next/image";
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import {Button} from "reactstrap";
+import {fonctionConnexion} from "@/components/utils/connexionUtils";
 
-export default async function Page() {
+
+
+export default function Page() {
+    const router = useRouter();
+
+    async function handleValiderClick () : Promise<void>{
+        const login = (document.getElementById('login') as HTMLInputElement).value;
+        const pdw = (document.getElementById('pdw') as HTMLInputElement).value;
+        console.log(login, pdw)
+        
+        const [user,value] = await fonctionConnexion(login, pdw);
+        if(user === undefined || user === '') {
+            alert('Login ou mot de passe incorrect');
+            return ;
+        }else if(user === 'inter') {
+            Cookies.set('authInter', value);
+            router.push('/');
+        }else if(user === 'admin') {
+            Cookies.set('authAdmin', value);
+            router.push('/');
+        }
+        return ;
+    }
+
 
     return (
 
@@ -18,7 +46,7 @@ export default async function Page() {
 
                 </div>
             </div>
-            <div className="flex items-center justify-center mt-5"><button className="flex text-black hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 leading-tight tracking-tight">Connexion </button></div>
+            <div className="flex items-center justify-center mt-5"><Button onClick={handleValiderClick} className="flex text-black hover:bg-primary-700 rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 leading-tight tracking-tight">Connexion </Button></div>
 
         </div>
 
