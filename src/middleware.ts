@@ -30,7 +30,7 @@ export function middleware(request: NextRequest) {
 
 
 
-    const URLstring = 'http://localhost:3000';
+    const URLstring = ""+process.env.SERVER_URL;
     const loginUrl: URL = new URL(URLstring);
     const response = NextResponse.next();
 

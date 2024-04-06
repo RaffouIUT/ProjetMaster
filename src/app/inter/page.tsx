@@ -5,11 +5,14 @@ import { InterEtendu, InterEtenduVide } from '@/components/utils/customTypes';
 import { getInterById } from '@/components/utils/interUtils';
 import { ToastContainer } from 'react-toastify';
 import Cookies from "js-cookie";
+import {Button} from "reactstrap";
+import {fonctionRedirectHome} from "@/components/utils/connexionUtils";
+import {useRouter} from "next/navigation";
 
 export default function Page() {
 
     const [intervenant, setIntervenant] = useState<InterEtendu>(structuredClone(InterEtenduVide));
-
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -26,10 +29,23 @@ export default function Page() {
         })
     }, []);
 
+    async function HandleDeconnexion() {
+        Cookies.set('authInter', 'false');
+        router.push('/');
+        const serverUrl = process.env.SERVER_URL;
+        if(serverUrl === undefined) {
+            alert('Erreur lors de la redirection');
+            return ;
+        }else{
+            await fonctionRedirectHome()
+        }
+    }
+
     return (
         <section className={"p-3"}>
             <ToastContainer />
             <h1 className={"text-center"}>Séléction Conférence</h1>
+            <Button onClick={HandleDeconnexion} size={"sm"} color={"danger"} >Déconnexion</Button>
             <div className={"grid grid-cols-3"}>
                 {intervenant.cours.map((cours => (
                     <div key={cours.id} className={'flex bg-gray-300 rounded-lg mx-4 my-4 justify-center justify-self-center text-center w-5/6 h-5/6 text-2xl'}>
