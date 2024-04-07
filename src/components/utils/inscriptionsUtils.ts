@@ -72,12 +72,11 @@ export const getInscriptionsByCours = async (cours: Cours) => {
   });
 
   // Tous les étudiants inscrits
-  const inscriptions: {etudiant: Etudiant, ponctualite: string}[] = await db.inscription.findMany({
+  const inscriptions: any[] = await db.inscription.findMany({
     where: {
       coursId: cours.id
     },
     select: {
-      etudiant: true,
       ponctualite: true
     },
     orderBy: {
@@ -88,7 +87,7 @@ export const getInscriptionsByCours = async (cours: Cours) => {
   });
 
   etuPresence.map((etu) => {
-    if (inscriptions.some( inscription => inscription.etudiant.id == etu.etudiant.id)) {
+    if (inscriptions.some( inscription => inscription.etudiantId == etu.etudiant.id)) {
       etu.present = "present";
     }
   })

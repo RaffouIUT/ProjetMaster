@@ -1,4 +1,3 @@
-import { ToastContainer } from 'react-toastify';
 import { Button, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
 import React, { useEffect, useState } from 'react';
 import { Etudiant, Promotion } from '@prisma/client';
@@ -8,13 +7,12 @@ import { addOrChangeEtu } from '@/components/utils/etuUtils';
 import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import { EtudiantVide } from '@/components/utils/customTypes';
 
+
 interface Params {
 	promos: Promotion[],
-	setActualize: React.Dispatch<React.SetStateAction<boolean>>,
-	etudiant: Etudiant
 }
 
-export default function AddStudentBlock({ promos, setActualize, etudiant }: Params) {
+export default function StudentTabPane({ promos }: Params) {
 
 	const [idEtu, setIdEtu] = useState<string>("");
 	const [nomEtu, setNomEtu] = useState<string>("");
@@ -22,20 +20,22 @@ export default function AddStudentBlock({ promos, setActualize, etudiant }: Para
 	const [promoIdEtu, setPromoIdEtu] = useState<string>("");
 	const [idEtuDisabled, setIdEtuDisabled] = useState<boolean>(false);
 
+	const [actualize, setActualize] = useState<boolean>(false);
+
 	useEffect(() => {
-		fillConstants(etudiant)
-	}, [etudiant]);
+		fillConstants(structuredClone(EtudiantVide))
+	}, [actualize]);
 
 	const addStudent = (e: any) => {
 		e.preventDefault();
 
 		if (checkField(idEtu, "idEtu") && checkField(nomEtu) && checkField(prenomEtu) && checkField(promoIdEtu)) {
 			addOrChangeEtu({id: idEtu, nom: nomEtu, prenom: prenomEtu, promotionId: promoIdEtu }).then(() => {
-				notifySuccess("L'étudiant a bien été ajouté ou modifié.");
+				notifySuccess("L'étudiant a bien été ajouté.");
 				fillConstants(structuredClone(EtudiantVide));
 				setActualize(true);
 			}).catch(() => {
-				notifyFailure("Erreur lors de l'ajout ou la modification de l'étudiant.")
+				notifyFailure("Erreur lors de l'ajout de l'étudiant.")
 			});
 		}
 	}
@@ -50,9 +50,8 @@ export default function AddStudentBlock({ promos, setActualize, etudiant }: Para
 	}
 
 	return (
-		<section className={"mb-4 flex flex-row"}>
-			<ToastContainer />
-			<section className={"basis-2/3 mr-6"}>
+		<section className={"mb-4 flex flex-column"}>
+			<section className={"mr-6 mb-5"}>
 				<h3>Ajouter un Etudiant</h3>
 				<Form className={"form"} onSubmit={addStudent}>
 					<Row>
@@ -99,7 +98,7 @@ export default function AddStudentBlock({ promos, setActualize, etudiant }: Para
 					</Row>
 				</Form>
 			</section>
-			<section className={"basis-1/3"}>
+			<section>
 				<h3>Ou importer les étudiants depuis un fichier</h3>
 				<Form className={"form"}>
 					<Row>

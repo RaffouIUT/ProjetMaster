@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Cours, Etudiant, Promotion } from '@prisma/client';
+import { Cours, Promotion } from '@prisma/client';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 import {
     addOrUpdateInscription,
@@ -8,7 +8,7 @@ import {
     getInscriptionsByPromoId
 } from '@/components/utils/inscriptionsUtils';
 import { Button, Input, Label, Table } from 'reactstrap';
-import { EtudiantVide, PresenceEtuCours } from '@/components/utils/customTypes';
+import { PresenceEtuCours } from '@/components/utils/customTypes';
 import { getAllCoursByPromoId } from '@/components/utils/coursUtils';
 import 'jspdf-autotable';
 import NavBarAdmin from '@/components/navBarAdmin';
@@ -16,8 +16,6 @@ import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import { deleteAllEtu } from '@/components/utils/etuUtils';
 
 import ExportPresenceTable from '@/components/exportPresenceTable';
-import AddStudentBlock from '@/components/addStudentBlock';
-import { TbHelp } from 'react-icons/tb';
 
 
 export default function Page() {
@@ -32,8 +30,6 @@ export default function Page() {
     const [cours, setCours] = useState<Cours[]>([]);
 
     const [actualize, setActualize] = useState<boolean>(true);
-
-    const [selectedEtu, setSelectedEtu] = useState<Etudiant>(structuredClone(EtudiantVide));
 
     useEffect(() => {
         if (actualize) {
@@ -97,15 +93,10 @@ export default function Page() {
     }
 
     return (
-        /* section gestion des séances du module administrateur */
         <section className={"flex flex-column min-h-screen"}>
             <NavBarAdmin presence={false}/>
             <section className={"p-4"}>
                 <section>
-                    <AddStudentBlock promos={promos} setActualize={setActualize} etudiant={selectedEtu} />
-                </section>
-                <hr />
-                <section className={"mt-7"}>
                     <h3>Visualiser les présences</h3>
                     <div className={"flex flex-row items-center"}>
                         <div className={"basis-1/5 flex flex-row items-center"}>
@@ -131,14 +122,7 @@ export default function Page() {
                     <Table id={"tab-activite"}>
                         <thead>
                         <tr>
-                            <th className={"flex"}>
-                                <button onClick={() => setSelectedEtu(structuredClone(EtudiantVide))}>Cours</button>
-                                &nbsp;
-                                <span className={'align-content-center'}>
-                                    <TbHelp className={'cursor-help'}
-                                        title={"Cliquer sur le nom d'un étudiant pour le modifier. Cliquer sur l'en-tête de la colonne pour vider le formulaire."} />
-                                </span>
-                            </th>
+                            <th>Cours</th>
                             {cours.map((cours) => (
                                 <th className={'text-center'}
                                     key={cours.id}>{cours.dateDebut.toLocaleDateString('fr-FR')}</th>
@@ -149,11 +133,7 @@ export default function Page() {
                         <tbody>
                         {inscriptions.map((inscription) => (
                             <tr key={inscription.etudiant.id}>
-                                <th scope={"row"}>
-                                    <button onClick={() => setSelectedEtu(inscription.etudiant)}>
-                                    {inscription.etudiant.nom} {inscription.etudiant.prenom}
-                                    </button>
-                                </th>
+                                <th scope={"row"}>{inscription.etudiant.nom} {inscription.etudiant.prenom}</th>
                                 {inscription.cours.map((presenceCours) => (
                                     <td className={"text-center"}
                                         key={presenceCours.cours.id + "-" + inscription.etudiant.id}

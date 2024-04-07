@@ -1,72 +1,87 @@
 'use client';
-import AddInterBlock from '@/components/addInterBlock';
+import InterTabPane from '@/components/interTabPane';
 import React, { useEffect, useState } from 'react';
 import { InterReduit } from '@/components/utils/customTypes';
 import { deleteInter, getAllInter } from '@/components/utils/interUtils';
-import { Button, Table } from 'reactstrap';
+import { Button, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap';
 import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import NavBarAdmin from '@/components/navBarAdmin';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { fonctionRedirectHome } from '@/components/utils/connexionUtils';
+import StudentTabPane from '@/components/studentTabPane';
+import { Promotion } from '@prisma/client';
+import { getAllPromo } from '@/components/utils/promotionUtils';
+import PromoTabPane from '@/components/promoTabPane';
 
 
 export default function Page() {
 
     const [intervenants, setIntervenants] = useState<InterReduit[]>([]);
 
-    const [actualizeInters, setActualizeInters] = useState<boolean>(true);
+    const [actualizeInters, setActualizeInters] = useState<boolean>(false);
+
+    const [activeTab, setActiveTab] = useState<string>("1");
+
+    const [promos, setPromos] = useState<Promotion[]>([]);
+
+    const [actualizePromos, setActualizePromos] = useState<boolean>(false);
+
+    const refreshPromos = () => setActualizePromos(!actualizePromos);
+
+    const refreshInters = () => setActualizeInters(!actualizeInters);
 
     useEffect(() => {
-        if (actualizeInters) {
-            getAllInter().then((inters) => setIntervenants(inters));
-            setActualizeInters(false)
-        }
+        getAllInter().then((inters) => setIntervenants(inters));
     }, [actualizeInters]);
 
-    const supprimerInter = async (e:  React.MouseEvent<HTMLButtonElement>) => {
-        // @ts-ignore
-        const idInter = e.target.parentElement.parentElement.id
-        deleteInter(idInter).then(() => {
-            notifySuccess("L'intervenant a bien été supprimé.")
-            setActualizeInters(true)
-        }).catch(() => notifyFailure("Erreur lors de la suppression BD de l'intervenant. \n Vérifiez qu'il n'a plus de cours associé."));
-    };
+    useEffect(() => {
+        getAllPromo().then((promotions) => setPromos(promotions));
+    }, [actualizePromos]);
 
-    return (
+
+    return (<>
         <section className="flex flex-column min-h-screen">
             <NavBarAdmin />
-            <section className={"p-4"}>
-                <AddInterBlock setActualize={setActualizeInters}/>
-                <section>
-                    <h3>Liste des intervenants</h3>
-                    <Table id={"tab-intervenants"}>
-                        <thead>
-                            <tr>
-                                <th>Nom</th>
-                                <th>Prenom</th>
-                                <th>Login</th>
-                                <th>Adresse mail</th>
-                                <th>Supprimer l'intervenant</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {intervenants.map((inter) => (
-                                <tr id={inter.id} key={inter.id} className={"align-middle"}>
-                                    <td>{inter.nom}</td>
-                                    <td>{inter.prenom}</td>
-                                    <td>{inter.login}</td>
-                                    <td>{inter.mail}</td>
-                                    <td>
-                                        <Button onClick={supprimerInter} size={"sm"} color={"danger"} >Supprimer</Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </section>
-            </section>
+            <div className={"p-3"}>
+                <Nav tabs>
+                    <NavItem>
+                        <NavLink
+                            className={activeTab == '1' ? "active" : ""}
+                            onClick={() => setActiveTab('1')}>
+                            Intervenants
+                        </NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className={activeTab == '2' ? "active" : ""}
+                            onClick={() => setActiveTab('2')}>
+                            Promotions
+                        </NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink
+                            className={activeTab == '3' ? "active" : ""}
+                            onClick={() => setActiveTab('3')}>
+                            Etudiants
+                        </NavLink>
+                    </NavItem>
+                </Nav>
+                <TabContent activeTab={activeTab}>
+                    <TabPane tabId="1">
+                        <Row className={"p-3"}>
+                            <InterTabPane inters={intervenants} refreshInters={refreshInters}/>
+                        </Row>
+                    </TabPane>
+                    <TabPane tabId="2">
+                        <Row className={"p-3"}>
+                            <PromoTabPane promos={promos} refreshPromos={refreshPromos}/>
+                        </Row>
+                    </TabPane>
+                    <TabPane tabId="3">
+                        <Row className={"p-3"}>
+                            <StudentTabPane promos={promos} />
+                        </Row>
+                    </TabPane>
+                </TabContent>
+            </div>
         </section>
-)
-    ;
+    </>);
 };

@@ -36,11 +36,19 @@ const generateMdp = ():string => {
 	return mdp;
 }
 
-export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
+export const addInter = async (id: string, nom: string, prenom: string, mail: string)=> {
 	const mdp = generateMdp();
 
-	await db.intervenant.create({
-		data: {
+	await db.intervenant.upsert({
+		where: {
+			id: id
+		},
+		update: {
+			nom: nom,
+			prenom: prenom,
+			mail: mail
+		},
+		create: {
 			nom: nom,
 			prenom: prenom,
 			mail: mail,
