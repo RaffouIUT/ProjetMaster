@@ -2,9 +2,8 @@
 import InterTabPane from '@/components/interTabPane';
 import React, { useEffect, useState } from 'react';
 import { InterReduit } from '@/components/utils/customTypes';
-import { deleteInter, getAllInter } from '@/components/utils/interUtils';
-import { Button, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap';
-import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
+import { getAllInter } from '@/components/utils/interUtils';
+import { Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
 import NavBarAdmin from '@/components/navBarAdmin';
 import StudentTabPane from '@/components/studentTabPane';
 import { Promotion } from '@prisma/client';

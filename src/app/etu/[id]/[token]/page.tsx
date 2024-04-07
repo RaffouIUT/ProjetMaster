@@ -25,8 +25,12 @@ export default function Page({ params }: {
             setCours(coursU)
             // Avant de regarder le token, le CAS et tout ça, on vérifie que la date du jour soit bien celle du cours
             if (coursU.dateDebut.getDate() == new Date().getDate()) {
+                // Si oui, alors on récupère le token du cours et on vérifie que le token de l'étudiant est identique
                 getTokenById(params.id).then((response) => {
                     if (response && response.tokenQrCode === params.token) {
+                        // Si oui, alors on fait
+                        // Soit la redirection vers le cas s'il n'y a pas le paramètre "ticket" dans l'url
+                        // Soit l'inscription s'il y en a un et qu'il est valide
                         setValidToken(true);
                         const paramTicket = useParams.get("ticket");
                         if (!paramTicket) {
