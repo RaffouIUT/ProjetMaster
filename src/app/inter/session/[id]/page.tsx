@@ -2,7 +2,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Cours, Etudiant } from '@prisma/client';
 import { addOrUpdateInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
-import { getCoursById } from '@/components/utils/coursUtils';
+import { emptyTokenById, getCoursById } from '@/components/utils/coursUtils';
 import { CoursVide } from '@/components/utils/customTypes';
 import { ToastContainer } from 'react-toastify';
 import { notifySuccess } from '@/components/utils/toastUtils';
@@ -31,6 +31,17 @@ export default function Page({ params }: {
 
     useEffect(() => {
         getCoursById(params.id).then(coursBD => setCours(coursBD))
+
+        function beforeUnload(e: BeforeUnloadEvent) {
+            emptyTokenById(params.id).then();
+            e.preventDefault();
+        }
+
+        window.addEventListener('beforeunload', beforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', beforeUnload);
+        };
     }, []);
 
     useEffect(() => {
