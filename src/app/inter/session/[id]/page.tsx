@@ -33,8 +33,7 @@ export default function Page({ params }: {
         getCoursById(params.id).then(coursBD => setCours(coursBD))
 
         function beforeUnload(e: BeforeUnloadEvent) {
-            emptyTokenById(params.id).then();
-            e.preventDefault();
+            emptyTokenById(params.id);
         }
 
         window.addEventListener('beforeunload', beforeUnload);
