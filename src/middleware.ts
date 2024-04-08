@@ -36,8 +36,8 @@ export function middleware(request: NextRequest) {
     const loginUrl: URL = new URL(URLstring);
     const response = NextResponse.next();
 
-    console.log('inter = '+getIsInter())
-    console.log('admin = '+getIsAdmin())
+    // console.log('inter = '+getIsInter())
+    // console.log('admin = '+getIsAdmin())
 
 
     if (request.nextUrl.pathname.startsWith('/admin') && !getIsAdmin()) {
