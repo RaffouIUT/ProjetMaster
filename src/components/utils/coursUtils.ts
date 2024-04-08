@@ -119,18 +119,6 @@ export const setTokenById = async (id: string, token: string) => {
     })
 }
 
-export const emptyTokenById = async (id: string) => {
-    await db.cours.update({
-        where: {
-            id: id
-        },
-        data: {
-            tokenQrCode: ""
-        }
-    })
-
-}
-
 export const deleteAllCours = async () => {
     // On doit d'abord supprimer toutes les inscriptions associées aux cours
     await deleteAllInscriptions();

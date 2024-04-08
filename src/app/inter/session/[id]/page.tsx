@@ -2,16 +2,15 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Cours, Etudiant } from '@prisma/client';
 import { addOrUpdateInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
-import { emptyTokenById, getCoursById } from '@/components/utils/coursUtils';
+import { getCoursById, setTokenById } from '@/components/utils/coursUtils';
 import { CoursVide } from '@/components/utils/customTypes';
 import { ToastContainer } from 'react-toastify';
 import { notifySuccess } from '@/components/utils/toastUtils';
 import QrCode from '@/components/qrCode';
-import { Button, Card, CardBody, CardHeader, Input, NavLink } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Input } from 'reactstrap';
 import { TbHelp } from 'react-icons/tb';
 
 import '@/components/custom.css';
-import Link from 'next/link';
 import { GoArrowLeft } from 'react-icons/go';
 
 export default function Page({ params }: {
@@ -33,7 +32,7 @@ export default function Page({ params }: {
         getCoursById(params.id).then(coursBD => setCours(coursBD))
 
         function beforeUnload(e: BeforeUnloadEvent) {
-            emptyTokenById(params.id);
+            setTokenById(params.id, "");
         }
 
         window.addEventListener('beforeunload', beforeUnload);
