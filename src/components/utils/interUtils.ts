@@ -57,14 +57,14 @@ export const addInter = async (id: string, nom: string, prenom: string, mail: st
 		}
 	});
 
-	await sendEmailToInter({
+	await sendEmail({
 		to: mail,
 		subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
 		text: 'Bonjour ' + nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans\nVotre login de session est ' + nom + '.' + prenom + '\nVoici votre mot passe : ' + mdp + '.'
 	});
 }
 
-export const sendEmailToInter = async (options: EmailOptions): Promise<void> => {
+export const sendEmail = async (options: EmailOptions): Promise<void> => {
 	// Créez un transporteur SMTP réutilisable
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',
