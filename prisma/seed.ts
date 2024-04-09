@@ -11,7 +11,7 @@ async function main() {
 }
 
 const insertAdmins = async () => {
-	prisma.administrateur.upsert({
+	await prisma.administrateur.upsert({
 		where : { id: "cluocil0u00005giwv1gsb8d9" },
 		update: {},
 		create: {
