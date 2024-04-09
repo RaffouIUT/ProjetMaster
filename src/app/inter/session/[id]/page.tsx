@@ -58,10 +58,6 @@ export default function Page({ params }: {
         })
     }, [cours, actualizeEtuNonPresents]);
 
-    setInterval(() => {
-        setActualize(!actualizeEtuNonPresents);
-    }, 2000)
-
     const handleBuffTempsMaxQR = (event: ChangeEvent<HTMLInputElement>) => {
         setTempsMaxQR(parseInt(event.target.value));
     }
@@ -148,7 +144,7 @@ export default function Page({ params }: {
                 <div className={"text-center mb-4"}>
                     <h2 className={"m-0"}>Module {cours.nom}</h2>
                 </div>
-                <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} />
+                <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} setActualize={setActualize} actualize={actualizeEtuNonPresents}/>
             </section>
 
             {/* Partie droite, liste des étudiants */}

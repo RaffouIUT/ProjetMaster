@@ -1,4 +1,3 @@
-'use client';
 import { useQRCode } from 'next-qrcode';
 import React, { useEffect, useState } from 'react';
 import { setTokenById } from '@/components/utils/coursUtils';
@@ -8,11 +7,13 @@ import '@/components/custom.css';
 import { TbHelp } from 'react-icons/tb';
 
 interface Params {
-  tempsMaxQr: number,
-  coursId: string
+    tempsMaxQr: number,
+    coursId: string,
+    setActualize: React.Dispatch<boolean>,
+    actualize: boolean
 }
 
-export default function QrCode({ tempsMaxQr, coursId } : Params) {
+export default function QrCode({ tempsMaxQr, coursId, setActualize, actualize } : Params) {
 
     const [code, setCode] = useState<boolean>(false)
 
@@ -36,6 +37,7 @@ export default function QrCode({ tempsMaxQr, coursId } : Params) {
           setTempsQR(tempsMaxQr);
           setBuffTempsMaxQR(tempsMaxQr);
           actualiserToken();
+          setActualize(!actualize);
         }
     }, 1000);
 
