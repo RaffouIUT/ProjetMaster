@@ -58,6 +58,10 @@ export default function Page({ params }: {
         })
     }, [cours, actualizeEtuNonPresents]);
 
+    setInterval(() => {
+        setActualize(!actualizeEtuNonPresents);
+    }, 2000)
+
     const handleBuffTempsMaxQR = (event: ChangeEvent<HTMLInputElement>) => {
         setTempsMaxQR(parseInt(event.target.value));
     }

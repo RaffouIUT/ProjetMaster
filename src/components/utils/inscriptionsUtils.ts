@@ -77,7 +77,8 @@ export const getInscriptionsByCours = async (cours: Cours) => {
       coursId: cours.id
     },
     select: {
-      ponctualite: true
+      ponctualite: true,
+      etudiantId: true
     },
     orderBy: {
       cours: {
