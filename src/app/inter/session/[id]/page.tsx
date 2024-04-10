@@ -2,7 +2,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Cours, Etudiant } from '@prisma/client';
 import { addOrUpdateInscription, getInscriptionsByCours } from '@/components/utils/inscriptionsUtils';
-import { getCoursById } from '@/components/utils/coursUtils';
+import { getCoursById, setTokenById } from '@/components/utils/coursUtils';
 import { CoursVide } from '@/components/utils/customTypes';
 import { ToastContainer } from 'react-toastify';
 import { notifySuccess } from '@/components/utils/toastUtils';
@@ -11,6 +11,7 @@ import { Button, Card, CardBody, CardHeader, Input } from 'reactstrap';
 import { TbHelp } from 'react-icons/tb';
 
 import '@/components/custom.css';
+import { GoArrowLeft } from 'react-icons/go';
 
 export default function Page({ params }: {
     params: { id: string }
@@ -29,6 +30,16 @@ export default function Page({ params }: {
 
     useEffect(() => {
         getCoursById(params.id).then(coursBD => setCours(coursBD))
+
+        function beforeUnload(e: BeforeUnloadEvent) {
+            setTokenById(params.id, "");
+        }
+
+        window.addEventListener('beforeunload', beforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', beforeUnload);
+        };
     }, []);
 
     useEffect(() => {
@@ -81,21 +92,24 @@ export default function Page({ params }: {
             <ToastContainer />
             {/* Menu latéral gauche, boutons d'actions */}
             <div className={"basis-1/4 p-3"}>
-                <div className={'flex items-center justify-around mb-3'}>
-                    <div className={"flex flex-row"}>
-                        <Button onClick={afficherRecherche} className={'mr-3'}>Ajouter étudiant</Button>
-                        <span className={'align-content-center'}>
-                            <TbHelp className={'cursor-help'}
-                                    title={"Si certains étudiants n'arrivent pas à scanner le QR code ni à accéder au lien, vous pouvez les ajouter manuellement \n" +
-                                        "S'ils sont dans la promo qui assiste au cours, ils devraient être dans la liste."} />
-                        </span>
-                    </div>
-                    <div className={"flex flex-row"}>
-                        <Button onClick={afficherOptions} className={'mr-3'}>⚙️</Button>
-                        <span className={'align-content-center'}>
-                            <TbHelp className={'cursor-help'}
-                                    title={"Si le temps pour scanner le QR code et s'inscrire, vous pouvez augmenter le temps avant qu'il ne change."} />
-                        </span>
+                <div className={"flex flex-column"}>
+                    <li className={"list-none mb-4 ml-2"}><a href={"/inter"} className={"flex flex-row align-items-center"}><GoArrowLeft /> &nbsp; <span className={"underline underline-offset-4"}>Revenir à la sélection des conférences</span></a></li>
+                    <div className={'flex items-center justify-around mb-3'}>
+                        <div className={"flex flex-row"}>
+                            <Button onClick={afficherRecherche} className={'mr-3'}>Ajouter étudiant</Button>
+                            <span className={'align-content-center'}>
+                                <TbHelp className={'cursor-help'}
+                                        title={"Si certains étudiants n'arrivent pas à scanner le QR code ni à accéder au lien, vous pouvez les ajouter manuellement \n" +
+                                            "S'ils sont dans la promo qui assiste au cours, ils devraient être dans la liste."} />
+                            </span>
+                        </div>
+                        <div className={"flex flex-row"}>
+                            <Button onClick={afficherOptions} className={'mr-3'}>⚙️</Button>
+                            <span className={'align-content-center'}>
+                                <TbHelp className={'cursor-help'}
+                                        title={"Si le temps pour scanner le QR code et s'inscrire, vous pouvez augmenter le temps avant qu'il ne change."} />
+                            </span>
+                        </div>
                     </div>
                 </div>
                 {options ? (<>
@@ -130,7 +144,7 @@ export default function Page({ params }: {
                 <div className={"text-center mb-4"}>
                     <h2 className={"m-0"}>Module {cours.nom}</h2>
                 </div>
-                <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} />
+                <QrCode tempsMaxQr={TempsMaxQR} coursId={cours.id} setActualize={setActualize} actualize={actualizeEtuNonPresents}/>
             </section>
 
             {/* Partie droite, liste des étudiants */}

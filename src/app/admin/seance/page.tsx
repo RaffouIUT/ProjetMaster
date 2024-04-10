@@ -15,15 +15,14 @@ import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalHead
 
 import NavBarAdmin from '@/components/navBarAdmin';
 import { FormCours, FormCoursVide, InterReduit } from '@/components/utils/customTypes';
-import { addCours, deleteCours, getCours, updateCours, deleteAllCours } from '@/components/utils/coursUtils';
+import { addCours, deleteAllCours, deleteCours, getCours, updateCours } from '@/components/utils/coursUtils';
 import { getAllInter } from '@/components/utils/interUtils';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 import { Promotion } from '@prisma/client';
 import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 
 import '@/components/custom.css';
-import { fillForm, checkField, getCorrectRender } from '@/components/utils/calendarUtils';
-
+import { checkField, fillForm, getCorrectRender } from '@/components/utils/calendarUtils';
 
 
 export default function Page()  {
@@ -301,9 +300,9 @@ export default function Page()  {
                     timeZone={'UTC'}
                     plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin]}
                     headerToolbar={{
-                        left: 'prev,next today addSeance deleteAllSeances',
+                        left: 'prev,next today addSeance',
                         center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        right: 'deleteAllSeances dayGridMonth,timeGridWeek,timeGridDay'
                     }}
                     buttonText={{
                         today: "Aujourd'hui",

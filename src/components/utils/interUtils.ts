@@ -68,6 +68,7 @@ export async function compareHashPassword(password: string, hashedPassword: stri
 }*/
 
 export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
+export const addInter = async (id: string, nom: string, prenom: string, mail: string)=> {
 	const mdp = generateMdp();
 	const mdp_hash = await hashPassword(mdp);
 	const bonPwd =  await compareHashPassword(mdp, mdp_hash);
@@ -78,8 +79,16 @@ export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
 		alert('Erreur de hashage du mot de passe');
 	}
 
-	await db.intervenant.create({
-		data: {
+	await db.intervenant.upsert({
+		where: {
+			id: id
+		},
+		update: {
+			nom: nom,
+			prenom: prenom,
+			mail: mail
+		},
+		create: {
 			nom: nom,
 			prenom: prenom,
 			mail: mail,
@@ -88,14 +97,14 @@ export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
 		}
 	});
 
-	await sendEmailToInter({
+	await sendEmail({
 		to: mail,
 		subject: 'Enregistrement en tant qu\'intervenant - Le Mans Université',
 		text: 'Bonjour ' + nom + ' ' + prenom + ',\nVous avez été ajouté en tant qu\'intervenant à l\'université du mans\nVotre login de session est ' + nom + '.' + prenom + '\nVoici votre mot passe : ' + mdp + '.'
 	});
 }
 
-export const sendEmailToInter = async (options: EmailOptions): Promise<void> => {
+export const sendEmail = async (options: EmailOptions): Promise<void> => {
 	// Créez un transporteur SMTP réutilisable
 	let transporter = nodemailer.createTransport({
 		service: 'gmail',

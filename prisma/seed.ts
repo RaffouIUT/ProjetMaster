@@ -2,12 +2,25 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 async function main() {
+	await insertAdmins();
 	const promos = await insertPromo();
 	const inters = await insertInters();
 	const cours = await insertCours(promos, inters);
-
 	const etus = await insertEtu(promos);
 	await insertInscriptions(etus, cours);
+}
+
+const insertAdmins = async () => {
+	await prisma.administrateur.upsert({
+		where : { id: "cluocil0u00005giwv1gsb8d9" },
+		update: {},
+		create: {
+			id: "cluocil0u00005giwv1gsb8d9",
+			mail: "administrateur@mail.fr",
+			login: "admin",
+			password: "password5"
+		}
+	})
 }
 
 const insertPromo = async () => {
