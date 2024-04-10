@@ -67,7 +67,7 @@ export async function compareHashPassword(password: string, hashedPassword: stri
 	console.log('mot de passe : '+password + '\nmot de passe hash : ' + hashedPassword, '\nbon mot de passe : ' + compare);
 }*/
 
-export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
+
 export const addInter = async (id: string, nom: string, prenom: string, mail: string)=> {
 	const mdp = generateMdp();
 	const mdp_hash = await hashPassword(mdp);
