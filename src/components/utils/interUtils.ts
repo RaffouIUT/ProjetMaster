@@ -1,7 +1,8 @@
 'use server';
 import db from '@/modules/db';
-import { EmailOptions, InterEtendu, InterEtenduVide, InterReduit } from '@/components/utils/customTypes';
+import {EmailOptions, InterEtendu, InterEtenduVide, InterReduit} from '@/components/utils/customTypes';
 import nodemailer from 'nodemailer';
+import bcrypt from 'bcryptjs';
 
 export const getAllInter = async () => {
 	const liste: InterReduit[] = [];
@@ -36,8 +37,46 @@ const generateMdp = ():string => {
 	return mdp;
 }
 
+export async function hashPassword(password: string) {
+	try {
+		return await bcrypt.hash(password, 10);
+	} catch (error) {
+		console.error(error);
+		throw new Error('Erreur lors du hachage du mot de passe');
+	}
+}
+
+export async function compareHashPassword(password: string, hashedPassword: string) {
+	return  bcrypt.compare(password, hashedPassword)
+}
+
+/*export async function devHashPassword() {
+	let password = 'password1';
+	let hashedPassword = await hashPassword(password);
+	let compare = await compareHashPassword(password, hashedPassword);
+	console.log('mot de passe : '+password + '\nmot de passe hash : ' + hashedPassword, '\nbon mot de passe : ' + compare);
+
+	password = 'password2';
+	hashedPassword = await hashPassword(password);
+	compare = await compareHashPassword(password, hashedPassword);
+	console.log('mot de passe : '+password + '\nmot de passe hash : ' + hashedPassword, '\nbon mot de passe : ' + compare);
+
+	password = 'password3';
+	hashedPassword = await hashPassword(password);
+	compare = await compareHashPassword(password, hashedPassword);
+	console.log('mot de passe : '+password + '\nmot de passe hash : ' + hashedPassword, '\nbon mot de passe : ' + compare);
+}*/
+
 export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
 	const mdp = generateMdp();
+	const mdp_hash = await hashPassword(mdp);
+	const bonPwd =  await compareHashPassword(mdp, mdp_hash);
+	//console.log('mot de passe : '+mdp + '\nmot de passe hash : ' + mdp_hash, '\nbon mot de passe : ' + bonPwd);
+	//await devHashPassword();
+	if(!bonPwd) {
+		console.error('Erreur de hashage du mot de passe');
+		alert('Erreur de hashage du mot de passe');
+	}
 
 	await db.intervenant.create({
 		data: {
@@ -45,7 +84,7 @@ export const ajoutInter = async (nom: string, prenom: string, mail: string)=> {
 			prenom: prenom,
 			mail: mail,
 			login: `${nom}.${prenom}`,
-			password: mdp
+			password: mdp_hash
 		}
 	});
 

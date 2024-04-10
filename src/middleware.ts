@@ -12,14 +12,16 @@ export const config = {
 
 export function middleware(request: NextRequest) {
 
+    //check id admin dans la bdd en hachant le cookie
     const getIsAdmin = () => {
         const authAdminCookie = request.cookies.get('authAdmin');
-        return authAdminCookie !== undefined && authAdminCookie.value === 'true';
+        return authAdminCookie !== undefined && authAdminCookie.value !== undefined && authAdminCookie.value !== 'false'&& authAdminCookie.value !== '';
     }
 
     const getIsInter = () => {
         const authInterCookie = request.cookies.get('authInter');
-        return authInterCookie !== undefined && authInterCookie.value !== undefined && authInterCookie.value !== 'false';
+        //TODO : encrypt fonct check valeur dans bdd : verif(authInterCookie.value)
+        return authInterCookie !== undefined && authInterCookie.value !== undefined && authInterCookie.value !== 'false' && authInterCookie.value !== '';
     }
 
 
@@ -36,8 +38,8 @@ export function middleware(request: NextRequest) {
     const loginUrl: URL = new URL(URLstring);
     const response = NextResponse.next();
 
-    console.log('inter = '+getIsInter())
-    console.log('admin = '+getIsAdmin())
+    //console.log('inter = '+getIsInter())
+    //console.log('admin = '+getIsAdmin())
 
 
     if (request.nextUrl.pathname.startsWith('/admin') && !getIsAdmin()) {

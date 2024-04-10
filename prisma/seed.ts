@@ -64,7 +64,7 @@ const insertInters = async () => {
 			prenom: "Antoine",
 			mail: "antoine.laurent@mail.fr",
 			login: "alaurent",
-			password: "password1"
+			password: "$2a$10$egzgoTtYxA7F0NZJxoiTI.FZDM0nv/bQFbXQjXnDn7UqyYdXwfZNu"
 		}
 	})
 	const inter2 = await prisma.intervenant.upsert({
@@ -76,7 +76,7 @@ const insertInters = async () => {
 			prenom: "Claudine",
 			mail: "cpt@mail.fr",
 			login: "cpt",
-			password: "password2"
+			password: "$2a$10$0JCZgcKhEj7J6RrJulP2Z.99cFmfy5btD4hYEWQCcXc1dzIs/WJke"
 		}
 	})
 	const inter3 = await prisma.intervenant.upsert({
@@ -88,7 +88,7 @@ const insertInters = async () => {
 			prenom: "Marie",
 			mail: "marie.tahon@mail.fr",
 			login: "mtahon",
-			password: "password3"
+			password: "$2a$10$eQsvNqzb47D35dSXQ8XmO.lLmvGRK.8yBJTffLaESY4RUS1VicLy2"
 		}
 	})
 
