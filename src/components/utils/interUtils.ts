@@ -141,5 +141,7 @@ export const getInterById = async (interId: string) => {
 			cours: true
 		}
 	});
+	interDB?.cours.sort((a, b) => (a.dateDebut < b.dateDebut) ? 1 : -1)
+
 	return interDB ?? structuredClone(InterEtenduVide)
 }
