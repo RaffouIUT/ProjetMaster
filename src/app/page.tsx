@@ -17,10 +17,10 @@ export default function Page() {
             alert('Login ou mot de passe incorrect');
             return ;
         }else if(user === 'inter') {
-            Cookies.set('authInter', value);
+            Cookies.set('authInter', btoa(value));
             router.push('/');
         }else if(user === 'admin') {
-            Cookies.set('authAdmin', value);
+            Cookies.set('authAdmin', btoa(value));
             router.push('/');
         }
         return ;

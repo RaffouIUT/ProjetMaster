@@ -36,7 +36,7 @@ export default function Page({ params }: {
             alert('Erreur lors de la récupération du cookie');
             return
         }else{
-            verifCookieInter(cookie).then((response) => {if(!response) {
+            verifCookieInter(atob(cookie)).then((response) => {if(!response) {
                 Cookies.set('authAdmin', 'false');
                 fonctionRedirectHome().then();
             }});

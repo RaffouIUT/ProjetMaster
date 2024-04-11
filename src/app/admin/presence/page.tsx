@@ -44,7 +44,7 @@ export default function Page() {
                 alert('Erreur lors de la récupération du cookie');
                 return
             }else{
-                verifCookieAdmin(cookie).then((response) => {if(!response) {
+                verifCookieAdmin(atob(cookie)).then((response) => {if(!response) {
                     Cookies.set('authAdmin', 'false');
                     fonctionRedirectHome().then();
                 }});
