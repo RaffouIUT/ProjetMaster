@@ -6,7 +6,7 @@ import { getInterById } from '@/components/utils/interUtils';
 import { ToastContainer } from 'react-toastify';
 import Cookies from "js-cookie";
 import {Button} from "reactstrap";
-import {fonctionRedirectHome} from "@/components/utils/connexionUtils";
+import {fonctionRedirectHome, verifCookieInter} from "@/components/utils/connexionUtils";
 import {useRouter} from "next/navigation";
 
 export default function Page() {
@@ -18,12 +18,19 @@ export default function Page() {
     useEffect(() => {
         let intervenantId: string ='';
         const cookie = Cookies.get('authInter')
-        if(cookie === undefined || cookie === '') {
-            alert('Vous n\'êtes pas connecté');
+        if(cookie === undefined) {
+            alert('Erreur lors de la récupération du cookie');
+            return
         }else{
-            intervenantId = cookie.toString();
-            console.log(intervenantId)
+            verifCookieInter(cookie).then((response) => {if(!response) {
+                Cookies.set('authAdmin', 'false');
+                fonctionRedirectHome().then();
+            }});
         }
+
+        intervenantId = cookie.toString();
+        console.log(intervenantId)
+
         getInterById(intervenantId).then((inter) => {
             setIntervenant(inter)
         })

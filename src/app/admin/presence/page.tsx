@@ -16,6 +16,8 @@ import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 import { deleteAllEtu } from '@/components/utils/etuUtils';
 
 import ExportPresenceTable from '@/components/exportPresenceTable';
+import {fonctionRedirectHome, verifCookieAdmin, verifCookieInter} from "@/components/utils/connexionUtils";
+import Cookies from "js-cookie";
 
 
 export default function Page() {
@@ -32,6 +34,23 @@ export default function Page() {
     const [actualize, setActualize] = useState<boolean>(true);
 
     useEffect(() => {
+        const cookie = Cookies.get('authAdmin');
+        if(cookie === undefined) {
+            alert('Erreur lors de la récupération du cookie');
+            return
+        }else{
+            const cookie = Cookies.get('authAdmin');
+            if(cookie === undefined) {
+                alert('Erreur lors de la récupération du cookie');
+                return
+            }else{
+                verifCookieAdmin(cookie).then((response) => {if(!response) {
+                    Cookies.set('authAdmin', 'false');
+                    fonctionRedirectHome().then();
+                }});
+            }
+
+        }
         if (actualize) {
             getInscriptionsByPromoId(selectedPromoId).then((inscriptions) => {
                 setInscriptions(inscriptions);

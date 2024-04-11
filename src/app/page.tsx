@@ -1,7 +1,7 @@
 'use client';
 import Image from "next/image";
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
+import {redirect, useRouter} from 'next/navigation';
 import { Button, Input } from 'reactstrap';
 import {fonctionConnexion} from "@/components/utils/connexionUtils";
 
@@ -12,7 +12,6 @@ export default function Page() {
         const login = (document.getElementById('login') as HTMLInputElement).value;
         const pdw = (document.getElementById('pdw') as HTMLInputElement).value;
         console.log(login, pdw)
-        
         const [user,value] = await fonctionConnexion(login, pdw);
         if(user === undefined || user === '') {
             alert('Login ou mot de passe incorrect');

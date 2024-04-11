@@ -12,6 +12,8 @@ import { TbHelp } from 'react-icons/tb';
 
 import '@/components/custom.css';
 import { GoArrowLeft } from 'react-icons/go';
+import Cookies from "js-cookie";
+import {fonctionRedirectHome, verifCookieInter} from "@/components/utils/connexionUtils";
 
 export default function Page({ params }: {
     params: { id: string }
@@ -29,6 +31,16 @@ export default function Page({ params }: {
     const [etusNonPresents, setEtusNonPresents] = useState<Etudiant[]>([]);
 
     useEffect(() => {
+        const cookie = Cookies.get('authInter');
+        if(cookie === undefined) {
+            alert('Erreur lors de la récupération du cookie');
+            return
+        }else{
+            verifCookieInter(cookie).then((response) => {if(!response) {
+                Cookies.set('authAdmin', 'false');
+                fonctionRedirectHome().then();
+            }});
+        }
         getCoursById(params.id).then(coursBD => setCours(coursBD))
 
         function beforeUnload(e: BeforeUnloadEvent) {

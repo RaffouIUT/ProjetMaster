@@ -23,6 +23,8 @@ import { notifyFailure, notifySuccess } from '@/components/utils/toastUtils';
 
 import '@/components/custom.css';
 import { checkField, fillForm, getCorrectRender } from '@/components/utils/calendarUtils';
+import {fonctionRedirectHome, verifCookieAdmin} from "@/components/utils/connexionUtils";
+import Cookies from "js-cookie";
 
 
 export default function Page()  {
@@ -64,6 +66,17 @@ export default function Page()  {
          * La dépendance liste vide [] permet de n'exécuter le code QU'UNE SEULE FOIS
          * de ce que j'ai compris, en mode developpement c'est exec 2 fois avec []
          */
+        const cookie = Cookies.get('authAdmin');
+        if(cookie === undefined) {
+            alert('Erreur lors de la récupération du cookie');
+            return
+        }else{
+            verifCookieAdmin(cookie).then((response) => {if(!response) {
+                Cookies.set('authAdmin', 'false');
+                fonctionRedirectHome().then();
+            }});
+        }
+
         getAllInter().then((liste) => {
             setInters(liste);
         });

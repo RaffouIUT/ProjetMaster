@@ -9,9 +9,11 @@ import StudentTabPane from '@/components/studentTabPane';
 import { Promotion } from '@prisma/client';
 import { getAllPromo } from '@/components/utils/promotionUtils';
 import PromoTabPane from '@/components/promoTabPane';
-
+import Cookies from "js-cookie";
+import {fonctionRedirectHome, verifCookieAdmin} from "@/components/utils/connexionUtils";
 
 export default function Page() {
+
 
     const [intervenants, setIntervenants] = useState<InterReduit[]>([]);
 
@@ -35,10 +37,23 @@ export default function Page() {
         getAllPromo().then((promotions) => setPromos(promotions));
     }, [actualizePromos]);
 
+    useEffect(() => {
+        const cookie = Cookies.get('authAdmin');
+        if(cookie === undefined) {
+            alert('Erreur lors de la récupération du cookie');
+            return
+        }else{
+            verifCookieAdmin(cookie).then((response) => {if(!response) {
+                Cookies.set('authAdmin', 'false');
+                fonctionRedirectHome().then();
+            }});
+        }
+    }, []);
+
 
     return (<>
         <section className="flex flex-column min-h-screen">
-            <NavBarAdmin />
+            <NavBarAdmin/>
             <div className={"p-3"}>
                 <Nav tabs>
                     <NavItem>
@@ -76,7 +91,7 @@ export default function Page() {
                     </TabPane>
                     <TabPane tabId="3">
                         <Row className={"p-3"}>
-                            <StudentTabPane promos={promos} />
+                            <StudentTabPane promos={promos}/>
                         </Row>
                     </TabPane>
                 </TabContent>
